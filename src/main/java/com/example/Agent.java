@@ -4,6 +4,8 @@ import java.util.*;
 import java.io.OutputStream;
 import com.google.common.collect.Lists;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 import sim.engine.*;
 import sim.field.grid.Grid2D;
 import sim.field.grid.ObjectGrid2D;
@@ -38,7 +40,6 @@ public class Agent implements Steppable {
     public void step(SimState state){
         this.gameboard = (GameBoard)state;
         this.tempBoard = this.gameboard.field;
-        
         //int num = smartStrategy(1);
         //System.out.println(num);
         //completeRandomStrategy();
@@ -48,7 +49,10 @@ public class Agent implements Steppable {
         //System.out.println(gameboard.solutionspaceArrayY.size());
         placeTrivialBulbs(2);
         createSolutionspaceArrayX();
-        GameBoard checkpoint = new GameBoard(System.currentTimeMillis(), gameboard);
+        
+        //GameBoard checkpoint = new GameBoard(System.currentTimeMillis(), gameboard);
+        //GameBoard checkpoint = new GameBoard(System.currentTimeMillis(), gameboard);
+        GameBoard checkpoint = SerializationUtils.clone(gameboard);
         //checkpoint.solutionspaceArrayX.get(0).get(0);
         List<Integer> tempListX = new ArrayList<>();
         tempListX.add(12);
@@ -65,7 +69,18 @@ public class Agent implements Steppable {
         //gameboard.solutionspaceArrayX.
         System.out.println("Checkpoint size="+checkpoint.solutionspaceArrayX.size());
         System.out.println("Original size="+gameboard.solutionspaceArrayX.size());
+
+        //Test ist der Checkpoint
+        ObjectGrid2D test;
+        test = SerializationUtils.clone(tempBoard);
+        tempBoard = SerializationUtils.clone(test);
+       
+
+        //Tempboard muss kopiert werden, hier sind die objekte gespeichert
         
+
+
+
         //createSolutionspaceArrayY();
         //exhaustiveBlockSearch();
         //System.out.println(gameboard.numberedWallLocations.size());
@@ -433,6 +448,7 @@ public class Agent implements Steppable {
 
     public boolean validateNumBulbsOnWall(){
         //Prüft ob die Zahl der Birnen an einer Mauer mit der Constraint übereinstimmt
+        //Returns true if there are no constraint violations
         int tempX;
         int tempY;
         int bulbCounter;
@@ -449,7 +465,10 @@ public class Agent implements Steppable {
             if(isBulb(tempX,tempY+1)){bulbCounter++;}
             if(isBulb(tempX,tempY-1)){bulbCounter++;}
 
-            if(bulbCounter > tempWall.numberAdjascentBulbs){constraintViolation = true;}
+            if(bulbCounter != tempWall.numberAdjascentBulbs){
+                constraintViolation = true;
+                return !constraintViolation;
+            }
         }
         return !constraintViolation;
     }

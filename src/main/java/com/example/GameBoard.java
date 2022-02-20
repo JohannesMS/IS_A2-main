@@ -2,11 +2,12 @@ package com.example;
 
 import sim.engine.*;
 import sim.field.grid.ObjectGrid2D;
+import org.apache.commons.*;
 
 import java.util.*;
 import java.io.*;
 
-public class GameBoard extends SimState {
+public class GameBoard extends SimState implements Serializable {
 
     static String filePath = new File("").getAbsolutePath() + "\\CSV\\";
 
@@ -26,8 +27,19 @@ public class GameBoard extends SimState {
         this.locationPlaceableNonTrivialBulbs = original.locationPlaceableNonTrivialBulbs;
         this.solutionspaceArrayX = original.solutionspaceArrayX;
         this.solutionspaceArrayY = original.solutionspaceArrayY;
+
+        //nur Variablen übergeben und dann neue variablen machen
     }
 
+    /*
+    public GameBoard(long seed, List<List<Integer>> solutionspace){
+        super(seed);
+        solutionspaceArrayX = new ArrayList<>(solutionspace);
+        
+
+    }
+    */
+ 
     
     
     protected String[] strategies = {"bruteForce","smart"};
@@ -40,7 +52,7 @@ public class GameBoard extends SimState {
     private File[] files = new File[folder.listFiles().length];
     //Wenn die Klasse Gamboard gemacht wird wird mit csv bestimmt welche CSV genommen wird. Es soll damit die Erstellung des Gameboards mit jeder CSV geloopt werden
     //Temporär
-    private int csv;
+    int csv;
 
     //Liste der Locations der nummerierten Mauern
     ArrayList<Integer[]> numberedWallLocations = new ArrayList<Integer[]>();
@@ -168,6 +180,7 @@ public class GameBoard extends SimState {
         final List<List<Integer>> copy = new ArrayList<List<Integer>>();
         for (List<Integer> list : lists) {
             size *= list.size();
+            System.out.println(size);
             if (size > Integer.MAX_VALUE)
                 throw new IllegalArgumentException();
             copy.add(new ArrayList<Integer>(list));

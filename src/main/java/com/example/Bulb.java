@@ -1,6 +1,8 @@
 package com.example;
 
-public class Bulb {
+import java.io.Serializable;
+
+public class Bulb implements Serializable {
 
 
     public Bulb(){
