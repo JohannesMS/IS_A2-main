@@ -19,13 +19,13 @@ public class GameBoard extends SimState {
 
     public GameBoard(long seed, GameBoard original){
         super(seed);
-        this.csv = csv;
-        this.field = field;
-        this.numberedWallLocations = numberedWallLocations;
-        this.emptyFieldLocations = emptyFieldLocations;
-        this.locationPlaceableNonTrivialBulbs = locationPlaceableNonTrivialBulbs;
-        this.solutionspaceArrayX = solutionspaceArrayX;
-        this.solutionspaceArrayY = solutionspaceArrayY;
+        this.csv = original.csv;
+        this.field = original.field;
+        this.numberedWallLocations = original.numberedWallLocations;
+        this.emptyFieldLocations = original.emptyFieldLocations;
+        this.locationPlaceableNonTrivialBulbs = original.locationPlaceableNonTrivialBulbs;
+        this.solutionspaceArrayX = original.solutionspaceArrayX;
+        this.solutionspaceArrayY = original.solutionspaceArrayY;
     }
 
     
@@ -43,16 +43,16 @@ public class GameBoard extends SimState {
     private int csv;
 
     //Liste der Locations der nummerierten Mauern
-    protected ArrayList<Integer[]> numberedWallLocations = new ArrayList<Integer[]>();
-    protected ArrayList<Integer[]> emptyFieldLocations = new ArrayList<Integer[]>();
-    protected ArrayList<Integer[]> locationPlaceableNonTrivialBulbs = new ArrayList<Integer[]>();
+    ArrayList<Integer[]> numberedWallLocations = new ArrayList<Integer[]>();
+    ArrayList<Integer[]> emptyFieldLocations = new ArrayList<Integer[]>();
+    ArrayList<Integer[]> locationPlaceableNonTrivialBulbs = new ArrayList<Integer[]>();
 
-    protected List<List<Integer>> solutionspaceArrayX = new ArrayList<>();
-    protected List<List<Integer>> solutionspaceArrayY = new ArrayList<>();
+    List<List<Integer>> solutionspaceArrayX = new ArrayList<>();
+    List<List<Integer>> solutionspaceArrayY = new ArrayList<>();
     
 
     //Spielbrett als ObjectGrid2D
-    protected ObjectGrid2D field = null;
+    ObjectGrid2D field = null;
 
 
 

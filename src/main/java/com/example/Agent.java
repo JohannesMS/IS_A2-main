@@ -50,7 +50,22 @@ public class Agent implements Steppable {
         createSolutionspaceArrayX();
         GameBoard checkpoint = new GameBoard(System.currentTimeMillis(), gameboard);
         //checkpoint.solutionspaceArrayX.get(0).get(0);
-        System.out.println(checkpoint.solutionspaceArrayX.size());
+        List<Integer> tempListX = new ArrayList<>();
+        tempListX.add(12);
+        System.out.println("Checkpoint int="+checkpoint.test);
+        System.out.println("Original int="+gameboard.test);
+        gameboard.test = 12;
+        System.out.println("Checkpoint int="+checkpoint.test);
+        System.out.println("Original int="+gameboard.test);
+
+
+        System.out.println("Checkpoint size="+checkpoint.solutionspaceArrayX.size());
+        System.out.println("Original size="+gameboard.solutionspaceArrayX.size());
+        gameboard.solutionspaceArrayX.add(tempListX);
+        //gameboard.solutionspaceArrayX.
+        System.out.println("Checkpoint size="+checkpoint.solutionspaceArrayX.size());
+        System.out.println("Original size="+gameboard.solutionspaceArrayX.size());
+        
         //createSolutionspaceArrayY();
         //exhaustiveBlockSearch();
         //System.out.println(gameboard.numberedWallLocations.size());
