@@ -26,21 +26,25 @@
       <scope>test</scope>
     </dependency>
 
-  <dependency>
-    <groupId>com.google.guava</groupId>
-    <artifactId>guava</artifactId>
-    <version>31.0.1-jre</version>
-  </dependency>
+    <dependency>
+      <groupId>org.javatuples</groupId>
+      <artifactId>javatuples</artifactId>
+      <version>1.2</version>
+    </dependency>
 
- <dependency>
-     <groupId>com.example</groupId>
-     <artifactId>maven</artifactId>
-     <version>20.0</version>
-     <scope>system</scope>
-     <systemPath>${project.basedir}/libs/mason.20.jar</systemPath>
- </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>31.0.1-jre</version>
+    </dependency>
 
-
+     <dependency>
+        <groupId>com.example</groupId>
+        <artifactId>maven</artifactId>
+        <version>20.0</version>
+        <scope>system</scope>
+        <systemPath>${project.basedir}/libs/mason.20.jar</systemPath>
+    </dependency>
   </dependencies>
 
   <build>

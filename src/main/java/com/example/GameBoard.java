@@ -3,8 +3,7 @@ package com.example;
 import sim.engine.*;
 import sim.field.grid.ObjectGrid2D;
 
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
 
 public class GameBoard extends SimState {
@@ -35,7 +34,7 @@ public class GameBoard extends SimState {
     protected ArrayList<Integer[]> emptyFieldLocations = new ArrayList<Integer[]>();
     protected ArrayList<Integer[]> locationPlaceableNonTrivialBulbs = new ArrayList<Integer[]>();
 
-    protected ArrayList<ArrayList<Integer[]>> solutionspaceArrayX = new ArrayList<ArrayList<Integer[]>>();
+    protected List<List<Integer>> solutionspaceArrayX = new ArrayList<>();
     protected ArrayList<ArrayList<Integer[]>> solutionspaceArrayY = new ArrayList<ArrayList<Integer[]>>();
     
 
@@ -75,6 +74,13 @@ public class GameBoard extends SimState {
         //System.out.println(board.files[0]);
         System.out.println("test");
         System.out.println(board.solutionspaceArrayX.size());
+
+        System.out.println(board.solutionspaceArrayX.get(0).get(0));
+
+        //System.out.println(cartesianProduct(Arrays.asList(Arrays.asList("Apple", "Banana"), Arrays.asList("Red", "Green", "Blue"))));
+
+        System.out.println(getCartesian2(board.solutionspaceArrayX));
+
         }
         
     }
@@ -142,6 +148,36 @@ public class GameBoard extends SimState {
         } catch (FileNotFoundException e){
             System.out.println("File probably not found");
         }   
+    }
+
+    public static List<List<Integer>> getCartesian2(List<List<Integer>> lists) {
+        long size = 1;
+        final List<List<Integer>> copy = new ArrayList<List<Integer>>();
+        for (List<Integer> list : lists) {
+            size *= list.size();
+            if (size > Integer.MAX_VALUE)
+                throw new IllegalArgumentException();
+            copy.add(new ArrayList<Integer>(list));
+        }
+        final int fSize = (int) size;
+        return new AbstractList<List<Integer>>() {
+            @Override
+            public int size() {
+                return fSize;
+            }
+            @Override
+            public List<Integer> get(int i) {
+                if (i < 0 || i >= fSize)
+                    throw new IndexOutOfBoundsException();
+                Integer[] arr = new Integer[copy.size()];
+                for (int j = copy.size() - 1; j >= 0; j--)  {
+                    List<Integer> list = copy.get(j);
+                    arr[j] = list.get(i % list.size());
+                    i /= list.size();
+                }
+                return Arrays.asList(arr);
+            }
+        };
     }
 
 }

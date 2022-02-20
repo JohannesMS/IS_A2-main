@@ -51,7 +51,7 @@ public class Agent implements Steppable {
         createSolutionspaceArrayX();
         createSolutionspaceArrayY();
         //exhaustiveBlockSearch();
-        System.out.println(gameboard.numberedWallLocations.size());
+        //System.out.println(gameboard.numberedWallLocations.size());
         //System.out.println(Lists.cartesianProduct(gameboard.solutionspaceArrayX));
         
         
