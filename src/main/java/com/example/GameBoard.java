@@ -16,6 +16,19 @@ public class GameBoard extends SimState {
 		super(seed);
         this.csv = csv;
 	}
+
+    public GameBoard(long seed, GameBoard original){
+        super(seed);
+        this.csv = csv;
+        this.field = field;
+        this.numberedWallLocations = numberedWallLocations;
+        this.emptyFieldLocations = emptyFieldLocations;
+        this.locationPlaceableNonTrivialBulbs = locationPlaceableNonTrivialBulbs;
+        this.solutionspaceArrayX = solutionspaceArrayX;
+        this.solutionspaceArrayY = solutionspaceArrayY;
+    }
+
+    
     
     protected String[] strategies = {"bruteForce","smart"};
 
@@ -79,7 +92,7 @@ public class GameBoard extends SimState {
 
         //System.out.println(cartesianProduct(Arrays.asList(Arrays.asList("Apple", "Banana"), Arrays.asList("Red", "Green", "Blue"))));
 
-        System.out.println(getCartesian2(board.solutionspaceArrayX));
+        //System.out.println(getCartesian2(board.solutionspaceArrayX));
 
         }
         
