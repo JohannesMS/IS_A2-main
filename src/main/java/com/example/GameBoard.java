@@ -35,7 +35,7 @@ public class GameBoard extends SimState {
     protected ArrayList<Integer[]> locationPlaceableNonTrivialBulbs = new ArrayList<Integer[]>();
 
     protected List<List<Integer>> solutionspaceArrayX = new ArrayList<>();
-    protected ArrayList<ArrayList<Integer[]>> solutionspaceArrayY = new ArrayList<ArrayList<Integer[]>>();
+    protected List<List<Integer>> solutionspaceArrayY = new ArrayList<>();
     
 
     //Spielbrett als ObjectGrid2D

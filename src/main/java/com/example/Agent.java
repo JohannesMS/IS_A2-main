@@ -1,7 +1,6 @@
 package com.example;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 import java.io.OutputStream;
 import com.google.common.collect.Lists;
 
@@ -49,7 +48,7 @@ public class Agent implements Steppable {
         //System.out.println(gameboard.solutionspaceArrayY.size());
         placeTrivialBulbs(2);
         createSolutionspaceArrayX();
-        createSolutionspaceArrayY();
+        //createSolutionspaceArrayY();
         //exhaustiveBlockSearch();
         //System.out.println(gameboard.numberedWallLocations.size());
         //System.out.println(Lists.cartesianProduct(gameboard.solutionspaceArrayX));
@@ -115,9 +114,9 @@ public class Agent implements Steppable {
 
         for (int i = 0; i<gameboard.solutionspaceArrayX.size(); i++){
             for( int z = 0; z<gameboard.solutionspaceArrayX.get(i).size(); z++){
-                tempX = gameboard.solutionspaceArrayX.get(i).get(z)[0];
-                tempY = gameboard.solutionspaceArrayX.get(i).get(z)[1];
-                setBulb(tempX, tempY);
+                //tempX = gameboard.solutionspaceArrayX.get(i).get(z)[0];
+                //tempY = gameboard.solutionspaceArrayX.get(i).get(z)[1];
+                //setBulb(tempX, tempY);
             }
         }
         
@@ -234,7 +233,9 @@ public class Agent implements Steppable {
     }
 
     public void createSolutionspaceArrayX(){
-        ArrayList<Integer[]> tempList = new ArrayList<Integer[]>();
+        //ArrayList<Integer[]> tempList = new ArrayList<Integer[]>();
+        List<Integer> tempListX = new ArrayList<>();
+        List<Integer> tempListY = new ArrayList<>();
         EmptyField tempField;
         Integer[] noBulb = {-1,-1};
         for(int y = 0; y<tempBoard.height;y++){
@@ -244,25 +245,39 @@ public class Agent implements Steppable {
                     tempField = (EmptyField) tempBoard.get(x, y);
                     if(tempField.illuminated || tempField.implaceable){
                     //Wenn das Feld beleuchtetet oder als nicht platzierbar gekennzeichnet ist wird die Liste der Hauptliste angefügt
-                        if(tempList.isEmpty()){
+                        if(tempListX.isEmpty()){
                             continue;
                         }
                         else{
-                        tempList.add(0, noBulb);
-                        gameboard.solutionspaceArrayX.add(tempList);
-                        tempList = new ArrayList<Integer[]>();
+                        //tempList.add(0, noBulb);
+                        tempListX.add(0, -1);
+                        tempListY.add(0, -1);
+                        gameboard.solutionspaceArrayX.add(tempListX);
+                        gameboard.solutionspaceArrayY.add(tempListY);
+                        //tempList = new ArrayList<Integer[]>();
+                        tempListX = new ArrayList<>();
+                        tempListY = new ArrayList<>();
                         //if(gameboard.solutionspaceArrayX.size() > 9){return;}
                         }
     
                     }
                     else{
                         Integer[] tempInt = {x,y};
-                        tempList.add(tempInt);
+                        //tempList.add(tempInt);
+                        tempListX.add(x);
+                        tempListY.add(y);
                         //System.out.println(Arrays.toString(tempInt));
                         if(isWall(x+1,y)){
-                            tempList.add(0, noBulb);
-                            gameboard.solutionspaceArrayX.add(tempList);
-                            tempList = new ArrayList<Integer[]>();
+                            //tempList.add(0, noBulb);
+                            //gameboard.solutionspaceArrayX.add(tempList);
+                            tempListX.add(0, -1);
+                            tempListY.add(0, -1);
+                            gameboard.solutionspaceArrayX.add(tempListX);
+                            gameboard.solutionspaceArrayY.add(tempListY);
+                            //tempList = new ArrayList<Integer[]>();
+                            tempListX = new ArrayList<>();
+                            tempListY = new ArrayList<>();
+
                             //if(gameboard.solutionspaceArrayX.size() > 9){return;}
                         }
                     }
@@ -287,7 +302,7 @@ public class Agent implements Steppable {
                         }
                         else{
                         tempList.add(0, noBulb);
-                        gameboard.solutionspaceArrayY.add(tempList);
+                        //gameboard.solutionspaceArrayY.add(tempList);
                         tempList = new ArrayList<Integer[]>();
 
                         }
@@ -299,7 +314,7 @@ public class Agent implements Steppable {
                         //System.out.println(Arrays.toString(tempInt));
                         if(isWall(x,y+1)){
                             tempList.add(0, noBulb);
-                            gameboard.solutionspaceArrayY.add(tempList);
+                            //gameboard.solutionspaceArrayY.add(tempList);
                             tempList = new ArrayList<Integer[]>();
                         }
                     }
@@ -586,7 +601,7 @@ public class Agent implements Steppable {
 
                                 for(int f = 0; f<gameboard.solutionspaceArrayY.get(d).size();f++){
                                     //Noch eine For Loop? Ich gehe hier nur den "kleinsten" Teil durch aber die anderen werden ignoriert
-                                    setBulb(gameboard.solutionspaceArrayY.get(d).get(f)[0], gameboard.solutionspaceArrayY.get(d).get(f)[1]);
+                                    //setBulb(gameboard.solutionspaceArrayY.get(d).get(f)[0], gameboard.solutionspaceArrayY.get(d).get(f)[1]);
                                     if(validateSolution()){
                                         System.out.println("Lösung gefunden :)");
                                         break;
