@@ -1,7 +1,7 @@
 package com.example;
 
 public class EmptyField {
-    boolean illuminated = false;
+    int illuminated = 0;
     boolean implaceable = false;
     public EmptyField(){
     }

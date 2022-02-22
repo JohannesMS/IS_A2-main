@@ -55,6 +55,9 @@ public class Agent implements Steppable {
         //exhaustiveBlockSearch();
         //System.out.println(gameboard.numberedWallLocations.size());
         //System.out.println(Lists.cartesianProduct(gameboard.solutionspaceArrayX));
+
+        //Backtrack Solver
+        //Kombinationen der Birnen an den Mauern und dann Backtracking
         
         
         
@@ -137,6 +140,24 @@ public class Agent implements Steppable {
         }           
     }
 
+    public boolean backtrackSolver(){
+
+        for(int x = 0; x<tempBoard.width;x++){
+            for(int y = 0; y<tempBoard.height;y++){
+                if(isEmptyField(x, y) && !isImplaceable(x, y)){
+                    setBulb(x, y);
+                    if(backtrackSolver()){
+                        return true;
+                    }
+                    else{
+                        removeBulb(x, y);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     public void setBulb(int x, int y){
         if(x==-1 || y==-1){return;}
         //Setzt Birnen
@@ -169,6 +190,15 @@ public class Agent implements Steppable {
         }
     }
 
+    public void removeBulb(int x, int y){
+        //Prüfen ob es eine Birne ist
+        //Wenn ja, Empty field erzeugen
+        //x und y durchgehen und illuminated-1
+        //Falls eine Mauer in der Umgebung ist numberleftoverbulbs+1
+        //  Dann gucken ob die Felder wieder als platzierbar markiert werden
+
+    }
+
     public int numPlaceableBulbs(){
         //Gibt die Zahl der Felder zurück die nicht als nicht platzierbar gekennzeichnet sind
         int placeable= 0;
@@ -176,7 +206,7 @@ public class Agent implements Steppable {
             for(int y = 0; y<tempBoard.height;y++){
                 if(isEmptyField(x, y)){
                     EmptyField tempField = (EmptyField) tempBoard.get(x, y);
-                    if (!tempField.implaceable && !tempField.illuminated){placeable++;}
+                    if (!tempField.implaceable && tempField.illuminated==1){placeable++;}
                 }
             }
         }
@@ -201,7 +231,7 @@ public class Agent implements Steppable {
             for(int y = 0; y<tempBoard.height;y++){
                 if(isEmptyField(x, y)){
                     EmptyField tempField = (EmptyField) tempBoard.get(x, y);
-                    if (!tempField.implaceable && !tempField.illuminated){
+                    if (!tempField.implaceable && tempField.illuminated==1){
                         Integer[] temp = {x,y};
                         gameboard.locationPlaceableNonTrivialBulbs.add(temp);
                     }
@@ -246,7 +276,7 @@ public class Agent implements Steppable {
                 //Create Array of connected X empty fields and add it to the ArrayList, when there are no connectable fields add to the first dimension ArrayList
                 if(isEmptyField(x,y)){
                     tempField = (EmptyField) tempBoard.get(x, y);
-                    if(tempField.illuminated || tempField.implaceable){
+                    if(tempField.illuminated>0 || tempField.implaceable){
                     //Wenn das Feld beleuchtetet oder als nicht platzierbar gekennzeichnet ist wird die Liste der Hauptliste angefügt
                         if(tempListX.isEmpty()){
                             continue;
@@ -298,7 +328,7 @@ public class Agent implements Steppable {
                 //Create Array of connected X empty fields and add it to the ArrayList, when there are no connectable fields add to the first dimension ArrayList
                 if(isEmptyField(x,y)){
                     tempField = (EmptyField) tempBoard.get(x, y);
-                    if(tempField.illuminated || tempField.implaceable){
+                    if(tempField.illuminated>0 || tempField.implaceable){
                     //Wenn das Feld beleuchtetet oder als nicht platzierbar gekennzeichnet ist wird die Liste der Hauptliste angefügt
                         if(tempList.isEmpty()){
                             continue;
@@ -355,7 +385,8 @@ public class Agent implements Steppable {
 
     public boolean isIlluminated(int x, int y){
        EmptyField tempField = (EmptyField) tempBoard.get(x, y);
-       return tempField.illuminated;
+       if(tempField.illuminated>0) return true;
+       else return false;
     }
 
     public boolean isOutOfBounds(int x, int y){
@@ -387,7 +418,7 @@ public class Agent implements Steppable {
         int tempY = y;
         while(isEmptyField(tempX+1, tempY)){
             EmptyField tempField = (EmptyField) tempBoard.get(tempX+1, tempY);
-            tempField.illuminated = true;
+            tempField.illuminated += 1;
             tempX++;
         }
 
@@ -395,7 +426,7 @@ public class Agent implements Steppable {
         tempY = y;
         while(isEmptyField(tempX-1, tempY)){
             EmptyField tempField = (EmptyField) tempBoard.get(tempX-1, tempY);
-            tempField.illuminated = true;
+            tempField.illuminated += 1;
             tempX--;
         }
 
@@ -403,7 +434,7 @@ public class Agent implements Steppable {
         tempY = y;
         while(isEmptyField(tempX, tempY+1)){
             EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY+1);
-            tempField.illuminated = true;
+            tempField.illuminated += 1;
             tempY++;
         }
 
@@ -411,7 +442,7 @@ public class Agent implements Steppable {
         tempY = y;
         while(isEmptyField(tempX, tempY-1)){
             EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY-1);
-            tempField.illuminated = true;
+            tempField.illuminated += 1;
             tempY--;
         }
     }
