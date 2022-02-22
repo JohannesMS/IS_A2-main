@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import sim.engine.*;
 import sim.field.grid.Grid2D;
 import sim.field.grid.ObjectGrid2D;
+import java.util.concurrent.TimeUnit;
 
 import java.util.Arrays;
 
@@ -48,9 +49,32 @@ public class Agent implements Steppable {
         //System.out.println(gameboard.solutionspaceArrayY.size());
         placeTrivialBulbs(2);
         createSolutionspaceArrayX();
-        GameBoard checkpoint = new GameBoard(System.currentTimeMillis(), gameboard);
+        //System.out.print("Placeablebulbs:" +numPlaceableBulbs());
+        //System.out.print("NumNotIlluminated:" +numNotIlluminated());
+        //System.out.println(validateSolution());
+        //setBulb(0, 0);
+        System.out.println(gameboard.solutionspaceArrayX.size());
+        //System.out.println(isIlluminated(1, 0));
+        //System.out.println(validateSolution());
+        
+        /*
+        Test ob removen funktioniert
+        
+        int tempX =2;
+        int tempY =0;
+        setBulb(tempX, tempY);
+        System.out.println(tempBoard.get(tempX, tempY).getClass());
+        System.out.println(isIlluminated(2, 1));
+        removeBulb(tempX, tempY);
+        System.out.println(tempBoard.get(tempX, tempY).getClass());
+        System.out.println(isIlluminated(2, 1));
+        backtrackSolver();
+        */
+        //backtrackSolver();
+        backtrackSolverArray();
+        //GameBoard checkpoint = new GameBoard(System.currentTimeMillis(), gameboard);
         //checkpoint.solutionspaceArrayX.get(0).get(0);
-        System.out.println(checkpoint.solutionspaceArrayX.size());
+        //System.out.println(checkpoint.solutionspaceArrayX.size());
         //createSolutionspaceArrayY();
         //exhaustiveBlockSearch();
         //System.out.println(gameboard.numberedWallLocations.size());
@@ -141,25 +165,69 @@ public class Agent implements Steppable {
     }
 
     public boolean backtrackSolver(){
-
-        for(int x = 0; x<tempBoard.width;x++){
-            for(int y = 0; y<tempBoard.height;y++){
+        if(validateSolution()){
+            System.out.println("Solution found");
+            return true;
+        }
+        for(int y = 0; y<tempBoard.height;y++){
+            for(int x = 0; x<tempBoard.width;x++){
                 if(isEmptyField(x, y) && !isImplaceable(x, y)){
-                    setBulb(x, y);
-                    if(backtrackSolver()){
-                        return true;
+                    //System.out.println(".");
+                    if(setBulb(x,y)){
+                        if(backtrackSolver()){
+                            return true;
+                        }
+                        else{
+                            removeBulb(x, y);
+                        }
                     }
-                    else{
-                        removeBulb(x, y);
-                    }
+                    
                 }
+                //return false;
             }
         }
-        return true;
+        if(validateSolution()){
+            System.out.println("Solution found");
+            return true;}
+        else return false;
     }
 
-    public void setBulb(int x, int y){
-        if(x==-1 || y==-1){return;}
+    public boolean backtrackSolverArray(){
+        if(validateSolution()){
+            System.out.println("Solution found");
+            return true;
+        }
+        int tempX;
+        int tempY;
+
+        for(int i = 0; i<gameboard.solutionspaceArrayX.size();i++){
+            for(int j = 0; j<gameboard.solutionspaceArrayX.get(i).size();j++){
+                tempX = gameboard.solutionspaceArrayX.get(i).get(j);
+                tempY = gameboard.solutionspaceArrayY.get(i).get(j);
+                //System.out.println(tempX + " und " + tempY);
+                if(isEmptyField(tempX, tempY) &&!isImplaceable(tempX, tempY)){
+                    if(setBulb(tempX,tempY)){
+                        if(backtrackSolverArray()){
+                            return true;
+                        }
+                        else{
+                            removeBulb(tempX, tempY);
+                        }
+                    }
+                } 
+
+            }
+        }
+        if(validateSolution()){
+            System.out.println("Solution found");
+            return true;}
+        else return false;
+
+        //rekursiv die Liste durchgehen, in der ersten Liste das Element platzieren, dann rekursiv in die Zweite und das erste Element, wenn am ende die Lösung nicht valide ist soll die Birne entfernt werden und das Zweite element aus der Liste genommen werden
+    }
+
+    public boolean setBulb(int x, int y){
+        if(x==-1 || y==-1){return true;}
         //Setzt Birnen
         if(!checkConstraintViolation(x, y)){
         tempBoard.set(x, y, new Bulb());
@@ -168,35 +236,151 @@ public class Agent implements Steppable {
         if(!isOutOfBounds(x+1, y) && tempBoard.get(x+1, y).getClass() == Wall.class){
             Wall tempWall = (Wall) tempBoard.get(x+1, y);
             tempWall.numberLeftoverBulbs--;
-
+            if(tempWall.numberLeftoverBulbs==0){
+                markAsImplaceable(x+1, y);
+            }
         }
         if(!isOutOfBounds(x-1, y) && tempBoard.get(x-1, y).getClass() == Wall.class){
             Wall tempWall = (Wall) tempBoard.get(x-1, y);
             tempWall.numberLeftoverBulbs--;
+            if(tempWall.numberLeftoverBulbs==0){
+                markAsImplaceable(x-1, y);
+            }
             
         }
         if(!isOutOfBounds(x, y+1) && tempBoard.get(x, y+1).getClass() == Wall.class){
             Wall tempWall = (Wall) tempBoard.get(x, y+1);
             tempWall.numberLeftoverBulbs--;
+            if(tempWall.numberLeftoverBulbs==0){
+                markAsImplaceable(x, y+1);
+            }
             
         }
         if(!isOutOfBounds(x, y-1) && tempBoard.get(x, y-1).getClass() == Wall.class){
             Wall tempWall = (Wall) tempBoard.get(x, y-1);
             tempWall.numberLeftoverBulbs--;
-            
+            if(tempWall.numberLeftoverBulbs==0){
+                markAsImplaceable(x, y-1);
+            }
             
         }
+        return true;
         //Wenn bulb platiert wird muss Leftoverbulbs von den Wall neighbors dekrementiert werden, in der Hauptmethode unten wird nähmlich sonst nur eine Mauer dekrementiert
+        }
+        else{
+            return false;
         }
     }
 
     public void removeBulb(int x, int y){
+        if(isBulb(x, y)){
+            tempBoard.set(x, y, new EmptyField());
+            int tempX = x;
+            int tempY = y;
+            while(isEmptyField(tempX+1, tempY)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX+1, tempY);
+                tempField.illuminated -= 1;
+                tempX++;
+            }
+
+            tempX = x;
+            tempY = y;
+            while(isEmptyField(tempX-1, tempY)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX-1, tempY);
+                tempField.illuminated -= 1;
+                tempX--;
+            }
+
+            tempX = x;
+            tempY = y;
+            while(isEmptyField(tempX, tempY+1)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY+1);
+                tempField.illuminated -= 1;
+                tempY++;
+            }
+
+            tempX = x;
+            tempY = y;
+            while(isEmptyField(tempX, tempY-1)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY-1);
+                tempField.illuminated -= 1;
+                tempY--;
+            }
+
+            if(!isOutOfBounds(x+1, y) && tempBoard.get(x+1, y).getClass() == Wall.class){
+                Wall tempWall = (Wall) tempBoard.get(x+1, y);
+                tempWall.numberLeftoverBulbs++;
+                markAsPlaceable(x+1, y);
+    
+            }
+            if(!isOutOfBounds(x-1, y) && tempBoard.get(x-1, y).getClass() == Wall.class){
+                Wall tempWall = (Wall) tempBoard.get(x-1, y);
+                tempWall.numberLeftoverBulbs++;
+                markAsPlaceable(x-1, y);
+                
+            }
+            if(!isOutOfBounds(x, y+1) && tempBoard.get(x, y+1).getClass() == Wall.class){
+                Wall tempWall = (Wall) tempBoard.get(x, y+1);
+                tempWall.numberLeftoverBulbs++;
+                markAsPlaceable(x, y+1);
+                
+            }
+            if(!isOutOfBounds(x, y-1) && tempBoard.get(x, y-1).getClass() == Wall.class){
+                Wall tempWall = (Wall) tempBoard.get(x, y-1);
+                tempWall.numberLeftoverBulbs++;
+                markAsPlaceable(x, y-1);
+                
+            }
+        }
         //Prüfen ob es eine Birne ist
         //Wenn ja, Empty field erzeugen
         //x und y durchgehen und illuminated-1
         //Falls eine Mauer in der Umgebung ist numberleftoverbulbs+1
         //  Dann gucken ob die Felder wieder als platzierbar markiert werden
 
+    }
+
+    public void markAsImplaceable(int x, int y){
+            int tempX = x;
+            int tempY = y;
+            if(isEmptyField(tempX+1, tempY)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX+1, tempY);
+                tempField.implaceable = true;
+            }
+            if(isEmptyField(tempX-1, tempY)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX-1, tempY);
+                tempField.implaceable = true;
+            }
+            if(isEmptyField(tempX, tempY+1)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY+1);
+                tempField.implaceable = true;
+            }
+            if(isEmptyField(tempX, tempY-1)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY-1);
+                tempField.implaceable = true;
+            }
+    }
+
+    public void markAsPlaceable(int x, int y){
+        //Remarks the von neumann neighborhood of a wall as placeable when a bulb is removed
+            int tempX = x;
+            int tempY = y;
+            if(isEmptyField(tempX+1, tempY)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX+1, tempY);
+                tempField.implaceable = false;
+            }
+            if(isEmptyField(tempX-1, tempY)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX-1, tempY);
+                tempField.implaceable = false;
+            }
+            if(isEmptyField(tempX, tempY+1)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY+1);
+                tempField.implaceable = false;
+            }
+            if(isEmptyField(tempX, tempY-1)){
+                EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY-1);
+                tempField.implaceable = false;
+            }
     }
 
     public int numPlaceableBulbs(){
@@ -206,7 +390,7 @@ public class Agent implements Steppable {
             for(int y = 0; y<tempBoard.height;y++){
                 if(isEmptyField(x, y)){
                     EmptyField tempField = (EmptyField) tempBoard.get(x, y);
-                    if (!tempField.implaceable && tempField.illuminated==1){placeable++;}
+                    if (!tempField.implaceable && tempField.illuminated>0){placeable++;}
                 }
             }
         }
@@ -358,6 +542,7 @@ public class Agent implements Steppable {
 
     public boolean checkConstraintViolation(int x, int y){
         //Die Prüfung der numbered Wall Constraints ist nicht notwendig da es durch die Art der Platzierung bereits behandelt wird
+        //if(!isWall(x, y) && !isBulb(x, y) && isEmptyField(x, y) && !isIlluminated(x, y) && !isImplaceable(x, y)){
         if(!isWall(x, y) && !isBulb(x, y) && isEmptyField(x, y) && !isIlluminated(x, y) && !isImplaceable(x, y)){
             return false;
         }
@@ -379,6 +564,7 @@ public class Agent implements Steppable {
     }
 
     public boolean isImplaceable(int x, int y){
+        if(x==-1 || y==-1){return true;}
         EmptyField tempField = (EmptyField) tempBoard.get(x, y);
         return tempField.implaceable;
     }
@@ -452,8 +638,9 @@ public class Agent implements Steppable {
         int tempX;
         int tempY;
         int bulbCounter;
-        boolean constraintViolation = false;
+        boolean validation;
 
+        //if(gameboard.numberedWallLocations.size()==0){return true;}
         for(int i = 0; i<gameboard.numberedWallLocations.size();i++){
             bulbCounter = 0;
             tempX = gameboard.numberedWallLocations.get(i)[0];
@@ -465,13 +652,16 @@ public class Agent implements Steppable {
             if(isBulb(tempX,tempY+1)){bulbCounter++;}
             if(isBulb(tempX,tempY-1)){bulbCounter++;}
 
-            if(bulbCounter > tempWall.numberAdjascentBulbs){constraintViolation = true;}
+            if(bulbCounter != tempWall.numberAdjascentBulbs){return false;}
         }
-        return !constraintViolation;
+        return true;
     }
 
     public boolean validateSolution(){
         //Gibt zurück ob die Lösung validie ist
+        //Test
+        //if(numNotIlluminated() == 0){return true;}
+        //Original
         if(numNotIlluminated() == 0 && validateNumBulbsOnWall()){return true;}
         else{return false;}
     }
