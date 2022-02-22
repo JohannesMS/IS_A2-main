@@ -2,12 +2,13 @@ package com.example;
 
 import sim.engine.*;
 import sim.field.grid.ObjectGrid2D;
+import org.apache.commons.*;
 
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
+import java.math.BigInteger;
 
-public class GameBoard extends SimState {
+public class GameBoard extends SimState implements Serializable {
 
     static String filePath = new File("").getAbsolutePath() + "\\CSV\\";
 
@@ -17,6 +18,30 @@ public class GameBoard extends SimState {
 		super(seed);
         this.csv = csv;
 	}
+
+    public GameBoard(long seed, GameBoard original){
+        super(seed);
+        this.csv = original.csv;
+        this.field = original.field;
+        this.numberedWallLocations = original.numberedWallLocations;
+        this.emptyFieldLocations = original.emptyFieldLocations;
+        this.locationPlaceableNonTrivialBulbs = original.locationPlaceableNonTrivialBulbs;
+        this.solutionspaceArrayX = original.solutionspaceArrayX;
+        this.solutionspaceArrayY = original.solutionspaceArrayY;
+
+        //nur Variablen übergeben und dann neue variablen machen
+    }
+
+    /*
+    public GameBoard(long seed, List<List<Integer>> solutionspace){
+        super(seed);
+        solutionspaceArrayX = new ArrayList<>(solutionspace);
+        
+
+    }
+    */
+ 
+    
     
     protected String[] strategies = {"bruteForce","smart"};
 
@@ -28,19 +53,21 @@ public class GameBoard extends SimState {
     private File[] files = new File[folder.listFiles().length];
     //Wenn die Klasse Gamboard gemacht wird wird mit csv bestimmt welche CSV genommen wird. Es soll damit die Erstellung des Gameboards mit jeder CSV geloopt werden
     //Temporär
-    private int csv;
+    int csv;
 
     //Liste der Locations der nummerierten Mauern
-    protected ArrayList<Integer[]> numberedWallLocations = new ArrayList<Integer[]>();
-    protected ArrayList<Integer[]> emptyFieldLocations = new ArrayList<Integer[]>();
-    protected ArrayList<Integer[]> locationPlaceableNonTrivialBulbs = new ArrayList<Integer[]>();
+    ArrayList<Integer[]> numberedWallLocations = new ArrayList<Integer[]>();
+    ArrayList<Integer[]> emptyFieldLocations = new ArrayList<Integer[]>();
+    ArrayList<Integer[]> locationPlaceableNonTrivialBulbs = new ArrayList<Integer[]>();
 
-    protected ArrayList<ArrayList<Integer[]>> solutionspaceArrayX = new ArrayList<ArrayList<Integer[]>>();
-    protected ArrayList<ArrayList<Integer[]>> solutionspaceArrayY = new ArrayList<ArrayList<Integer[]>>();
+    List<List<Integer>> solutionspaceArrayX = new ArrayList<>();
+    List<List<Integer>> solutionspaceArrayY = new ArrayList<>();
+
+    List<List<Integer[]>> bulbsOnWallCombination = new ArrayList<>();
     
 
     //Spielbrett als ObjectGrid2D
-    protected ObjectGrid2D field = null;
+    ObjectGrid2D field = null;
 
 
 
@@ -75,6 +102,13 @@ public class GameBoard extends SimState {
         //System.out.println(board.files[0]);
         System.out.println("test");
         System.out.println(board.solutionspaceArrayX.size());
+
+        System.out.println(board.solutionspaceArrayX.get(0).get(0));
+
+        //System.out.println(cartesianProduct(Arrays.asList(Arrays.asList("Apple", "Banana"), Arrays.asList("Red", "Green", "Blue"))));
+
+        //System.out.println(getCartesian2(board.solutionspaceArrayX));
+
         }
         
     }
@@ -142,6 +176,37 @@ public class GameBoard extends SimState {
         } catch (FileNotFoundException e){
             System.out.println("File probably not found");
         }   
+    }
+
+    public static List<List<Integer>> getCartesian2(List<List<Integer>> lists) {
+        long size = 1;
+        final List<List<Integer>> copy = new ArrayList<List<Integer>>();
+        for (List<Integer> list : lists) {
+            size *= list.size();
+            System.out.println(size);
+            if (size > Integer.MAX_VALUE)
+                throw new IllegalArgumentException();
+            copy.add(new ArrayList<Integer>(list));
+        }
+        final int fSize = (int) size;
+        return new AbstractList<List<Integer>>() {
+            @Override
+            public int size() {
+                return fSize;
+            }
+            @Override
+            public List<Integer> get(int i) {
+                if (i < 0 || i >= fSize)
+                    throw new IndexOutOfBoundsException();
+                Integer[] arr = new Integer[copy.size()];
+                for (int j = copy.size() - 1; j >= 0; j--)  {
+                    List<Integer> list = copy.get(j);
+                    arr[j] = list.get(i % list.size());
+                    i /= list.size();
+                }
+                return Arrays.asList(arr);
+            }
+        };
     }
 
 }

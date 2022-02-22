@@ -1,7 +1,8 @@
 package com.example;
 
-public class Wall {
-    //Spielfigur als Objekt notwendig?
+import java.io.Serializable;
+
+public class Wall implements Serializable {
     public int numberAdjascentBulbs;
     public int numberLeftoverBulbs;
     public int numberBulbs;
