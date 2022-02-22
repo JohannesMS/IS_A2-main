@@ -6,6 +6,7 @@ import org.apache.commons.*;
 
 import java.util.*;
 import java.io.*;
+import java.math.BigInteger;
 
 public class GameBoard extends SimState implements Serializable {
 
@@ -61,6 +62,8 @@ public class GameBoard extends SimState implements Serializable {
 
     List<List<Integer>> solutionspaceArrayX = new ArrayList<>();
     List<List<Integer>> solutionspaceArrayY = new ArrayList<>();
+
+    List<List<Integer[]>> bulbsOnWallCombination = new ArrayList<>();
     
 
     //Spielbrett als ObjectGrid2D

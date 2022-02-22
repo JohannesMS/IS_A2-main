@@ -49,31 +49,19 @@ public class Agent implements Steppable {
         //System.out.println(gameboard.solutionspaceArrayY.size());
         placeTrivialBulbs(2);
         createSolutionspaceArrayX();
-        
-        //GameBoard checkpoint = new GameBoard(System.currentTimeMillis(), gameboard);
-        //GameBoard checkpoint = new GameBoard(System.currentTimeMillis(), gameboard);
-        GameBoard checkpoint = SerializationUtils.clone(gameboard);
-        //checkpoint.solutionspaceArrayX.get(0).get(0);
-        List<Integer> tempListX = new ArrayList<>();
-        tempListX.add(12);
-        System.out.println("Checkpoint int="+checkpoint.test);
-        System.out.println("Original int="+gameboard.test);
-        gameboard.test = 12;
-        System.out.println("Checkpoint int="+checkpoint.test);
-        System.out.println("Original int="+gameboard.test);
-
-
-        System.out.println("Checkpoint size="+checkpoint.solutionspaceArrayX.size());
-        System.out.println("Original size="+gameboard.solutionspaceArrayX.size());
-        gameboard.solutionspaceArrayX.add(tempListX);
-        //gameboard.solutionspaceArrayX.
-        System.out.println("Checkpoint size="+checkpoint.solutionspaceArrayX.size());
-        System.out.println("Original size="+gameboard.solutionspaceArrayX.size());
+        System.out.println("x"+gameboard.numberedWallLocations.size());
 
         //Test ist der Checkpoint
         ObjectGrid2D test;
         test = SerializationUtils.clone(tempBoard);
-        tempBoard = SerializationUtils.clone(test);
+
+        for(int i = 0; i<100; i++){
+            //Braucht 40 Sekunden
+            placeTrivialBulbs(2);
+            validateSolution();
+            tempBoard = SerializationUtils.clone(test);
+        }
+        
        
 
         //Tempboard muss kopiert werden, hier sind die objekte gespeichert
