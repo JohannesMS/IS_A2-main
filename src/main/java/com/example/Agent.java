@@ -40,6 +40,12 @@ public class Agent implements Steppable {
         this.gameboard = (GameBoard)state;
         this.tempBoard = this.gameboard.field;
         
+
+        //TODO
+        //Die Kandidaten sortieren, die mit weniger Möglichkeiten zuerst, dafür brauche ich noch eine Liste um nach größe zu sortieren
+        //In dem KandidatenBacktracking alle Möglichkeiten der restlichen Birnen iterieren, dafür brauche ich einen Abbruch wenn alle Möglichkeiten durch sind
+        //Bei der greedybacktrack soll eine validnumbumbsonwall platzierung als Lösung gespeichert werden inklusive trivialer Birnen, die Lösung wird in form von Bulblocations gespeichert. Durch diese Lösungen wird mit einer anderen rekursiven funktion iteriert
+
         //int num = smartStrategy(1);
         //System.out.println(num);
         //completeRandomStrategy();
@@ -48,28 +54,20 @@ public class Agent implements Steppable {
         //System.out.println(gameboard.solutionspaceArrayX.size());
         //System.out.println(gameboard.solutionspaceArrayY.size());
 
-        /*
         placeTrivialBulbs(2);
         createSolutionspaceArrayX();
         setCandidates();
         System.out.print("X:"+gameboard.numberedWallCandidates.get(0)[0]);
         System.out.print("Y:"+gameboard.numberedWallCandidates.get(0)[1]);
         System.out.println("Candidates: "+ gameboard.numberedWallCandidates.size());
+        
+        setLocationPlaceableNonTrivialBulbs();
+        //gameboard.locationPlaceableNonTrivialBulbs.size();
+        //System.out.println("Locations:"+gameboard.locationPlaceableNonTrivialBulbs.size());
+        
         greedyBacktrackSolver();
-        */
-        setBulb(0, 0);
-        setBulb(2, 0);
-        Wall tmpWall = (Wall)tempBoard.get(1, 0);
-        System.out.println("LeftoverBulbs:"+tmpWall.numberLeftoverBulbs);
-        System.out.println("IsIlluminated:"+isIlluminated(0,1));
-        System.out.println("Is implaceable:"+isImplaceable(1, 1));
-
-        removeBulb(0, 0);
-        System.out.println(tmpWall.numberLeftoverBulbs);
-        System.out.println(isIlluminated(0,1));
-        System.out.println("Is implaceable:"+isImplaceable(1, 1));
-
-
+        //backtrackSolver();
+       // backtrackSolverArray();
         //System.out.print(gameboard.numberedWallCandidates.size());
         //System.out.print("Placeablebulbs:" +numPlaceableBulbs());
         //System.out.print("NumNotIlluminated:" +numNotIlluminated());
@@ -227,7 +225,7 @@ public class Agent implements Steppable {
     
         for(int y = 0; y<tempBoard.height;y++){
             for(int x = 0; x<tempBoard.width;x++){
-                if(isEmptyField(x, y) && !isImplaceable(x, y)){
+                //if(isEmptyField(x, y) && !isImplaceable(x, y)){
                     //System.out.println(".");
                     if(setBulb(x,y)){
                         if(backtrackSolver()){
@@ -238,9 +236,35 @@ public class Agent implements Steppable {
                         }
                     }
                     
-                }
+                //}
                 //return false;
             }
+        }
+        if(validateSolution()){
+            System.out.println("Solution found");
+            return true;}
+        else return false;
+    }
+
+    public boolean backtrackSolver2(){
+    
+        for(int i = 0; i<gameboard.locationPlaceableNonTrivialBulbs.size();i++){
+            int x = gameboard.locationPlaceableNonTrivialBulbs.get(i)[0];
+            int y = gameboard.locationPlaceableNonTrivialBulbs.get(i)[1];
+                //if(isEmptyField(x, y) && !isImplaceable(x, y)){
+                    //System.out.println(".");
+                    if(setBulb(x,y)){
+                        if(backtrackSolver2()){
+                            return true;
+                        }
+                        else{
+                            removeBulb(x, y);
+                        }
+                    }
+                    
+                //}
+                //return false;
+         
         }
         if(validateSolution()){
             System.out.println("Solution found");
@@ -286,6 +310,7 @@ public class Agent implements Steppable {
         for(int i = 0; i<gameboard.numberedWallCandidates.size();i++){
             tempX = gameboard.numberedWallCandidates.get(i)[0];
             tempY = gameboard.numberedWallCandidates.get(i)[1];
+            //Wenn die numbered Wall constraints nicht erfüllt sind soll direkt die nächste Iteration genommen werden (Wird das schon?)
             if(setBulb(tempX, tempY)){
                 if(greedyBacktrackSolver()){
                     return true;
@@ -297,23 +322,18 @@ public class Agent implements Steppable {
                     if(validateNumBulbsOnWall()){
                         //Wenn die numbered Wall constraints erfüllt sind sollen die restlichen platzierungen probiert werden,
                         //Wenn die nicht möglich sind soll die nächste Kandidatenkombination geprüft werden.
-                        for(int x = 0; x<tempBoard.height;x++){
-                            for(int y = 0; y<tempBoard.width;y++){
-                                if(isEmptyField(x, y)){
-                                    setBulb(x, y);
-                                }
-                            }
-
-                        }
-                        System.out.println(numNotIlluminated());
-                        System.out.println(validateSolution());
+                        setLocationPlaceableNonTrivialBulbs();
+                        System.out.println("Locationsize:"+gameboard.locationPlaceableNonTrivialBulbs.size());
+                        backtrackSolver2();
+                        System.out.println("Possible Solution found");
                         
                     }
-                    removeBulb(tempX, tempY);
+                    else removeBulb(tempX, tempY);
                     
                 }
 
             }
+
         }
         if(validateSolution()){
             System.out.println("Solution found");
@@ -509,6 +529,7 @@ public class Agent implements Steppable {
 
     public void setLocationPlaceableNonTrivialBulbs(){
         //Füllt das generische Array locationPlaceableNonTrivialBulbs, gibt die Zahl der möglichen nicht trivialen platzierbaren Birnen an
+        gameboard.locationPlaceableNonTrivialBulbs = new ArrayList<>();
         for(int x = 0; x<tempBoard.width;x++){
             for(int y = 0; y<tempBoard.height;y++){
                 if(isEmptyField(x, y)){
