@@ -51,6 +51,8 @@ public class GameBoard extends SimState {
 
     protected List<List<Integer>> solutionspaceArrayX = new ArrayList<>();
     protected List<List<Integer>> solutionspaceArrayY = new ArrayList<>();
+
+    protected List<Integer[]> numberedWallCandidates = new ArrayList<Integer[]>();
     
 
     //Spielbrett als ObjectGrid2D
@@ -79,8 +81,8 @@ public class GameBoard extends SimState {
     public static void main(String[] args){
         
         //Hier würde dann mithilfe des files Array geloopt werden und die Simulation mindestens einmal pro CSV ausgeführt werden
-        for(int i=0; i<1;i++){
-        GameBoard board = new GameBoard(System.currentTimeMillis(), 1);
+        for(int i=0; i<1;i++){ //4 zum testen
+        GameBoard board = new GameBoard(System.currentTimeMillis(),2);
         board.setFilepaths();
         board.start();
         board.finish();

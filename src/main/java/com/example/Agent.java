@@ -47,13 +47,35 @@ public class Agent implements Steppable {
         //createSolutionspaceArrayY();
         //System.out.println(gameboard.solutionspaceArrayX.size());
         //System.out.println(gameboard.solutionspaceArrayY.size());
+
+        /*
         placeTrivialBulbs(2);
         createSolutionspaceArrayX();
+        setCandidates();
+        System.out.print("X:"+gameboard.numberedWallCandidates.get(0)[0]);
+        System.out.print("Y:"+gameboard.numberedWallCandidates.get(0)[1]);
+        System.out.println("Candidates: "+ gameboard.numberedWallCandidates.size());
+        greedyBacktrackSolver();
+        */
+        setBulb(0, 0);
+        setBulb(2, 0);
+        Wall tmpWall = (Wall)tempBoard.get(1, 0);
+        System.out.println("LeftoverBulbs:"+tmpWall.numberLeftoverBulbs);
+        System.out.println("IsIlluminated:"+isIlluminated(0,1));
+        System.out.println("Is implaceable:"+isImplaceable(1, 1));
+
+        removeBulb(0, 0);
+        System.out.println(tmpWall.numberLeftoverBulbs);
+        System.out.println(isIlluminated(0,1));
+        System.out.println("Is implaceable:"+isImplaceable(1, 1));
+
+
+        //System.out.print(gameboard.numberedWallCandidates.size());
         //System.out.print("Placeablebulbs:" +numPlaceableBulbs());
         //System.out.print("NumNotIlluminated:" +numNotIlluminated());
         //System.out.println(validateSolution());
         //setBulb(0, 0);
-        System.out.println(gameboard.solutionspaceArrayX.size());
+        //System.out.println("Number of placeable Bulbs: " + numPlaceableBulbs());
         //System.out.println(isIlluminated(1, 0));
         //System.out.println(validateSolution());
         
@@ -71,7 +93,7 @@ public class Agent implements Steppable {
         backtrackSolver();
         */
         //backtrackSolver();
-        backtrackSolverArray();
+        //backtrackSolverArray();
         //GameBoard checkpoint = new GameBoard(System.currentTimeMillis(), gameboard);
         //checkpoint.solutionspaceArrayX.get(0).get(0);
         //System.out.println(checkpoint.solutionspaceArrayX.size());
@@ -136,6 +158,43 @@ public class Agent implements Steppable {
 
     }
 
+    public void setCandidates(){
+        for(int i = 0; i<gameboard.numberedWallLocations.size();i++){
+            int tempX = gameboard.numberedWallLocations.get(i)[0];
+            int tempY = gameboard.numberedWallLocations.get(i)[1];
+            int bulbCount = 0;
+
+            if(isEmptyField(tempX+1, tempY) && isBulb(tempX+1, tempY))bulbCount++;
+            if(isEmptyField(tempX-1, tempY) && isBulb(tempX-1, tempY))bulbCount++;
+            if(isEmptyField(tempX, tempY+1) && isBulb(tempX, tempY+1))bulbCount++;
+            if(isEmptyField(tempX, tempY-1) && isBulb(tempX, tempY-1))bulbCount++;
+
+            Wall tempWall = (Wall)tempBoard.get(tempX, tempY);
+            if(tempWall.numberAdjascentBulbs != bulbCount){
+                if(isEmptyField(tempX+1, tempY) && !isIlluminated(tempX+1, tempY)){
+                    Integer[] location = {tempX+1, tempY};
+                    gameboard.numberedWallCandidates.add(location);
+                }
+                if(isEmptyField(tempX-1, tempY) && !isIlluminated(tempX-1, tempY)){
+                    Integer[] location = {tempX-1, tempY};
+                    gameboard.numberedWallCandidates.add(location);
+                }
+                if(isEmptyField(tempX, tempY+1) && !isIlluminated(tempX, tempY+1)){
+                    Integer[] location = {tempX, tempY+1};
+                    gameboard.numberedWallCandidates.add(location);
+                }
+                if(isEmptyField(tempX, tempY-1) && !isIlluminated(tempX, tempY-1)){
+                    Integer[] location = {tempX, tempY-1};
+                    gameboard.numberedWallCandidates.add(location);
+                }
+                
+
+
+            }
+
+        }
+    }
+
     public void smartSetter(){
         //Experiment
         int tempX;
@@ -165,10 +224,7 @@ public class Agent implements Steppable {
     }
 
     public boolean backtrackSolver(){
-        if(validateSolution()){
-            System.out.println("Solution found");
-            return true;
-        }
+    
         for(int y = 0; y<tempBoard.height;y++){
             for(int x = 0; x<tempBoard.width;x++){
                 if(isEmptyField(x, y) && !isImplaceable(x, y)){
@@ -205,7 +261,6 @@ public class Agent implements Steppable {
                 tempX = gameboard.solutionspaceArrayX.get(i).get(j);
                 tempY = gameboard.solutionspaceArrayY.get(i).get(j);
                 //System.out.println(tempX + " und " + tempY);
-                if(isEmptyField(tempX, tempY) &&!isImplaceable(tempX, tempY)){
                     if(setBulb(tempX,tempY)){
                         if(backtrackSolverArray()){
                             return true;
@@ -214,7 +269,6 @@ public class Agent implements Steppable {
                             removeBulb(tempX, tempY);
                         }
                     }
-                } 
 
             }
         }
@@ -224,6 +278,50 @@ public class Agent implements Steppable {
         else return false;
 
         //rekursiv die Liste durchgehen, in der ersten Liste das Element platzieren, dann rekursiv in die Zweite und das erste Element, wenn am ende die Lösung nicht valide ist soll die Birne entfernt werden und das Zweite element aus der Liste genommen werden
+    }
+
+    public boolean greedyBacktrackSolver(){
+        int tempX;
+        int tempY;
+        for(int i = 0; i<gameboard.numberedWallCandidates.size();i++){
+            tempX = gameboard.numberedWallCandidates.get(i)[0];
+            tempY = gameboard.numberedWallCandidates.get(i)[1];
+            if(setBulb(tempX, tempY)){
+                if(greedyBacktrackSolver()){
+                    return true;
+                }
+                else{
+                    //Ab hier können keine Kandidaten mehr gesetzt werden
+                    //setLocationPlaceableNonTrivialBulbs();
+                    //System.out.println(validateNumBulbsOnWall());
+                    if(validateNumBulbsOnWall()){
+                        //Wenn die numbered Wall constraints erfüllt sind sollen die restlichen platzierungen probiert werden,
+                        //Wenn die nicht möglich sind soll die nächste Kandidatenkombination geprüft werden.
+                        for(int x = 0; x<tempBoard.height;x++){
+                            for(int y = 0; y<tempBoard.width;y++){
+                                if(isEmptyField(x, y)){
+                                    setBulb(x, y);
+                                }
+                            }
+
+                        }
+                        System.out.println(numNotIlluminated());
+                        System.out.println(validateSolution());
+                        
+                    }
+                    removeBulb(tempX, tempY);
+                    
+                }
+
+            }
+        }
+        if(validateSolution()){
+            System.out.println("Solution found");
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public boolean setBulb(int x, int y){
@@ -390,7 +488,7 @@ public class Agent implements Steppable {
             for(int y = 0; y<tempBoard.height;y++){
                 if(isEmptyField(x, y)){
                     EmptyField tempField = (EmptyField) tempBoard.get(x, y);
-                    if (!tempField.implaceable && tempField.illuminated>0){placeable++;}
+                    if (!tempField.implaceable && tempField.illuminated==0){placeable++;}
                 }
             }
         }
@@ -415,7 +513,7 @@ public class Agent implements Steppable {
             for(int y = 0; y<tempBoard.height;y++){
                 if(isEmptyField(x, y)){
                     EmptyField tempField = (EmptyField) tempBoard.get(x, y);
-                    if (!tempField.implaceable && tempField.illuminated==1){
+                    if (!tempField.implaceable && tempField.illuminated==0){
                         Integer[] temp = {x,y};
                         gameboard.locationPlaceableNonTrivialBulbs.add(temp);
                     }
@@ -686,10 +784,26 @@ public class Agent implements Steppable {
             int wallCounter = 0;
             tempX = gameboard.emptyFieldLocations.get(i)[0];
             tempY = gameboard.emptyFieldLocations.get(i)[1];
-            if(isWall(tempX+1,tempY)){wallCounter++;}
-            if(isWall(tempX-1,tempY)){wallCounter++;}
-            if(isWall(tempX,tempY+1)){wallCounter++;}
-            if(isWall(tempX,tempY-1)){wallCounter++;}
+            if(!isOutOfBounds(tempX+1, tempY) && isWall(tempX+1,tempY)){
+                Wall tempwWall = (Wall)tempBoard.get(tempX+1, tempY);
+                if (tempwWall.numberAdjascentBulbs==0)continue;
+                wallCounter++;
+            }
+            if(!isOutOfBounds(tempX-1, tempY) && isWall(tempX-1,tempY)){
+                Wall tempwWall = (Wall)tempBoard.get(tempX-1, tempY);
+                if (tempwWall.numberAdjascentBulbs==0)continue;
+                wallCounter++;
+            }
+            if(!isOutOfBounds(tempX, tempY+1) && isWall(tempX,tempY+1)){
+                Wall tempwWall = (Wall)tempBoard.get(tempX, tempY+1);
+                if (tempwWall.numberAdjascentBulbs==0)continue;
+                wallCounter++;
+            }
+            if(!isOutOfBounds(tempX, tempY-1) && isWall(tempX,tempY-1)){
+                Wall tempwWall = (Wall)tempBoard.get(tempX, tempY-1);
+                if (tempwWall.numberAdjascentBulbs==0)continue;
+                wallCounter++;
+            }
             if(wallCounter == 4){setBulb(tempX, tempY);}
         }
 
