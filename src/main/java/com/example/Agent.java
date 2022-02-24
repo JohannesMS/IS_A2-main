@@ -25,6 +25,8 @@ public class Agent implements Steppable {
     public String strategy;
     public int backtrackingSteps = 0;
 
+    int steps = 0;
+
 
     public Agent(){
         super();
@@ -55,16 +57,49 @@ public class Agent implements Steppable {
         //TODO
         //Die Kandidatenliste aufteilen
         //Jedes mal wenn die Möglichen Kandidaten einer Mauer platziert werden wird geprüft ob diese Mauer die Constraints erfüllt, wenn nicht wird die iteration gebrochen
+        //Jedes mal wenn eine Kandidatenliste durchgegangen wurde soll diese und frühere Listen auch Gültigkeit geprüft werden
 
         //Bugs
         //Wenn eine Birne entfernt wird und die Felder als platzierbar markiert werden wird nicht geprüft ob andere Mauern betroffen sind
         //
 
-        placeTrivialBulbs(2);
-        setCandidates();
+        //placeTrivialBulbs(2);
+        //setCandidates();
+        //setLocationPlaceableNonTrivialBulbs();
+
+        EmptyField testField = (EmptyField) tempBoard.get(2, 0);
+        System.out.println(testField.implaceable);
+
         printGameboard(); 
+        setBulb(4, 0);
+        printGameboard(); 
+        System.out.println(testField.implaceable);
+        setBulb(0, 0);
+        printGameboard(); 
+        System.out.println(testField.implaceable);
+        setBulb(1, 1);
+        printGameboard();
+        System.out.println(testField.implaceable);
+        removeBulb(0, 0);
+        printGameboard();
+        System.out.println(testField.implaceable);
+        removeBulb(1, 1);
+        printGameboard();
+        System.out.println(testField.implaceable);
+        /*
+        setBulb(4, 0);
+        printGameboard();
+        removeBulb(4, 0);
+        printGameboard();
+        setBulb(4, 1);
+        printGameboard();
+        */
+        System.out.print("Wallconstraint archievable:" + isWallConstraintArchievable());
+        //System.out.println(gameboard.numberedWallCandidates.size());
         //greedyBacktrackSolver();
-        backtrackSolver();
+        //System.out.println(steps);
+        //backtrackSolver2();
+        
         
         
         
@@ -81,15 +116,15 @@ public class Agent implements Steppable {
         for(int y = 0; y<tempBoard.height; y++){
             for(int x = 0; x<tempBoard.width; x++){
                 if(isEmptyField(x,y)){
-                    if(isImplaceable(x,y)){System.out.print("x  ");}
-                    else if(!isImplaceable(x, y))System.out.print("_  ");
+                    if(isImplaceable(x,y)){System.out.print("x ");}
+                    else if(!isImplaceable(x, y))System.out.print("_ ");
                     
                 }
-                else if(isBulb(x, y)){System.out.print("?  ");}
+                else if(isBulb(x, y)){System.out.print("? ");}
                 else if(isWall(x, y)){
                     Wall tempWall = (Wall)tempBoard.get(x, y);
-                    if(tempWall.blank){System.out.print("-1");}
-                    else{System.out.print(tempWall.numberAdjascentBulbs + "  ");}
+                    if(tempWall.blank){System.out.print("6 ");}
+                    else{System.out.print(tempWall.numberAdjascentBulbs + " ");}
                 }
 
 
@@ -114,19 +149,19 @@ public class Agent implements Steppable {
 
             Wall tempWall = (Wall)tempBoard.get(tempX, tempY);
             if(tempWall.numberAdjascentBulbs != bulbCount){
-                if(isEmptyField(tempX+1, tempY) && !isIlluminated(tempX+1, tempY)){
+                if(isEmptyField(tempX+1, tempY) && !isIlluminated(tempX+1, tempY) && !isImplaceable(tempX+1, tempY)){
                     Integer[] location = {tempX+1, tempY};
                     gameboard.numberedWallCandidates.add(location);
                 }
-                if(isEmptyField(tempX-1, tempY) && !isIlluminated(tempX-1, tempY)){
+                if(isEmptyField(tempX-1, tempY) && !isIlluminated(tempX-1, tempY) && !isImplaceable(tempX-1, tempY)){
                     Integer[] location = {tempX-1, tempY};
                     gameboard.numberedWallCandidates.add(location);
                 }
-                if(isEmptyField(tempX, tempY+1) && !isIlluminated(tempX, tempY+1)){
+                if(isEmptyField(tempX, tempY+1) && !isIlluminated(tempX, tempY+1) && !isImplaceable(tempX, tempY+1)){
                     Integer[] location = {tempX, tempY+1};
                     gameboard.numberedWallCandidates.add(location);
                 }
-                if(isEmptyField(tempX, tempY-1) && !isIlluminated(tempX, tempY-1)){
+                if(isEmptyField(tempX, tempY-1) && !isIlluminated(tempX, tempY-1) && !isImplaceable(tempX, tempY-1)){
                     Integer[] location = {tempX, tempY-1};
                     gameboard.numberedWallCandidates.add(location);
                 }
@@ -138,33 +173,6 @@ public class Agent implements Steppable {
         }
     }
 
-    public void smartSetter(){
-        //Experiment
-        int tempX;
-        int tempY;
-        while(!validateSolution()){
-
-        for (int i = 0; i<gameboard.solutionspaceArrayX.size(); i++){
-            for( int z = 0; z<gameboard.solutionspaceArrayX.get(i).size(); z++){
-                //tempX = gameboard.solutionspaceArrayX.get(i).get(z)[0];
-                //tempY = gameboard.solutionspaceArrayX.get(i).get(z)[1];
-                //setBulb(tempX, tempY);
-            }
-        }
-        
-    }
-
-        //[Alle waagerechten leeren felder][Array der Locations][Location]
-        //Durchlaufen
-        while(numPlaceableBulbs()!=0){
-        //Setbulbs
-
-        if(validateSolution()){
-            System.out.println("Solution found");
-            break;
-            }
-        }           
-    }
 
     public boolean backtrackSolver(){
     
@@ -173,7 +181,8 @@ public class Agent implements Steppable {
                 //if(isEmptyField(x, y) && !isImplaceable(x, y)){
                     //System.out.println(".");
                     if(setBulb(x,y)){
-                        printGameboard();
+                        //printGameboard();
+                        //printGameboard();
                         if(backtrackSolver()){
                             return true;
                         }
@@ -200,7 +209,9 @@ public class Agent implements Steppable {
             int y = gameboard.locationPlaceableNonTrivialBulbs.get(i)[1];
                 //if(isEmptyField(x, y) && !isImplaceable(x, y)){
                     //System.out.println(".");
+                    if(isWallConstraintArchievable() == false){return false;}
                     if(setBulb(x,y)){
+                        //printGameboard();
                         if(backtrackSolver2()){
                             return true;
                         }
@@ -234,10 +245,14 @@ public class Agent implements Steppable {
                 tempY = gameboard.solutionspaceArrayY.get(i).get(j);
                 //System.out.println(tempX + " und " + tempY);
                     if(setBulb(tempX,tempY)){
+                        //Wenn tempX == -1 soll ein blocker für die Liste gesetzt werden, der Blocker würde wenn vorhanden in Zeile 220 gehoben werden 
+                        //printGameboard();
+                        if(tempX == -1){continue;}
                         if(backtrackSolverArray()){
                             return true;
                         }
                         else{
+                            //RemoveBlocker
                             removeBulb(tempX, tempY);
                         }
                     }
@@ -259,6 +274,12 @@ public class Agent implements Steppable {
             tempX = gameboard.numberedWallCandidates.get(i)[0];
             tempY = gameboard.numberedWallCandidates.get(i)[1];
             //Wenn die numbered Wall constraints nicht erfüllt sind soll direkt die nächste Iteration genommen werden (Wird das schon?)
+            //Prüfung ob die constraints überhaupt noch erfüllbar sind, wenn nicht return false; FOWARD CHECKING!!!
+            if(isWallConstraintArchievable() == false){
+                //printGameboard();
+                steps++;
+                return false;
+            }
             if(setBulb(tempX, tempY)){
                 printGameboard();
                 if(greedyBacktrackSolver()){
@@ -268,15 +289,19 @@ public class Agent implements Steppable {
                     //Ab hier können keine Kandidaten mehr gesetzt werden
                     //setLocationPlaceableNonTrivialBulbs();
                     //System.out.println(validateNumBulbsOnWall());
+                    //printGameboard();
                     backtrackingSteps++;
                     if(validateNumBulbsOnWall()){
                         //Wenn die numbered Wall constraints erfüllt sind sollen die restlichen platzierungen probiert werden,
                         //Wenn die nicht möglich sind soll die nächste Kandidatenkombination geprüft werden.
-                        
-                        setLocationPlaceableNonTrivialBulbs();
-                        System.out.println("Locationsize:"+gameboard.locationPlaceableNonTrivialBulbs.size());
-                        backtrackSolver2();
+                        //createSolutionspaceArrayX();
+                        //setLocationPlaceableNonTrivialBulbs();
+                        //System.out.println("Locationsize:"+gameboard.locationPlaceableNonTrivialBulbs.size());
+                        //printGameboard();
                         System.out.println("Possible Solution found");
+                        //backtrackSolverArray();
+                        //backtrackSolver2();
+                        
                         
                     }
                     else removeBulb(tempX, tempY);
@@ -293,6 +318,36 @@ public class Agent implements Steppable {
         else{
             return false;
         }
+    }
+
+
+    public boolean isWallConstraintArchievable(){
+        int tempX;
+        int tempY;
+        for(int i = 0; i<gameboard.numberedWallLocations.size(); i++){
+            int countPlaceable = 0;
+            int bulbCounter = 0;
+            tempX = gameboard.numberedWallLocations.get(i)[0];
+            tempY = gameboard.numberedWallLocations.get(i)[1];
+            Wall tempWall = (Wall) tempBoard.get(tempX, tempY);
+
+            if(isBulb(tempX+1,tempY)){bulbCounter++;}
+            if(isBulb(tempX-1,tempY)){bulbCounter++;}
+            if(isBulb(tempX,tempY+1)){bulbCounter++;}
+            if(isBulb(tempX,tempY-1)){bulbCounter++;}
+            //Wenn
+            if(bulbCounter == tempWall.numberAdjascentBulbs){continue;}
+            
+            //if placeable < numberLeftoverBulbs
+            if(isEmptyField(tempX+1, tempY) && !isImplaceable(tempX+1, tempY) && !isIlluminated(tempX+1, tempY)){countPlaceable++;}
+            if(isEmptyField(tempX-1, tempY) && !isImplaceable(tempX-1, tempY) && !isIlluminated(tempX-1, tempY)){countPlaceable++;}
+            if(isEmptyField(tempX, tempY+1) && !isImplaceable(tempX, tempY+1) && !isIlluminated(tempX, tempY+1)){countPlaceable++;}
+            if(isEmptyField(tempX, tempY-1) && !isImplaceable(tempX, tempY-1) && !isIlluminated(tempX, tempY-1)){countPlaceable++;}
+
+            if(countPlaceable < tempWall.numberLeftoverBulbs){return false;}
+        }
+
+        return true;
     }
 
     public boolean setBulb(int x, int y){
@@ -414,19 +469,19 @@ public class Agent implements Steppable {
             int tempY = y;
             if(isEmptyField(tempX+1, tempY)){
                 EmptyField tempField = (EmptyField) tempBoard.get(tempX+1, tempY);
-                tempField.implaceable = true;
+                tempField.implaceable++;
             }
             if(isEmptyField(tempX-1, tempY)){
                 EmptyField tempField = (EmptyField) tempBoard.get(tempX-1, tempY);
-                tempField.implaceable = true;
+                tempField.implaceable++;
             }
             if(isEmptyField(tempX, tempY+1)){
                 EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY+1);
-                tempField.implaceable = true;
+                tempField.implaceable++;
             }
             if(isEmptyField(tempX, tempY-1)){
                 EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY-1);
-                tempField.implaceable = true;
+                tempField.implaceable++;
             }
     }
 
@@ -436,19 +491,23 @@ public class Agent implements Steppable {
             int tempY = y;
             if(isEmptyField(tempX+1, tempY)){
                 EmptyField tempField = (EmptyField) tempBoard.get(tempX+1, tempY);
-                tempField.implaceable = false;
+                tempField.implaceable--;
+                if(tempField.implaceable<0){tempField.implaceable=0;}
             }
             if(isEmptyField(tempX-1, tempY)){
                 EmptyField tempField = (EmptyField) tempBoard.get(tempX-1, tempY);
-                tempField.implaceable = false;
+                tempField.implaceable--;
+                if(tempField.implaceable<0){tempField.implaceable=0;}
             }
             if(isEmptyField(tempX, tempY+1)){
                 EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY+1);
-                tempField.implaceable = false;
+                tempField.implaceable--;
+                if(tempField.implaceable<0){tempField.implaceable=0;}
             }
             if(isEmptyField(tempX, tempY-1)){
                 EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY-1);
-                tempField.implaceable = false;
+                tempField.implaceable--;
+                if(tempField.implaceable<0){tempField.implaceable=0;}
             }
     }
 
@@ -459,7 +518,7 @@ public class Agent implements Steppable {
             for(int y = 0; y<tempBoard.height;y++){
                 if(isEmptyField(x, y)){
                     EmptyField tempField = (EmptyField) tempBoard.get(x, y);
-                    if (!tempField.implaceable && tempField.illuminated==0){placeable++;}
+                    if (tempField.implaceable==0 && tempField.illuminated==0){placeable++;}
                 }
             }
         }
@@ -485,7 +544,7 @@ public class Agent implements Steppable {
             for(int y = 0; y<tempBoard.height;y++){
                 if(isEmptyField(x, y)){
                     EmptyField tempField = (EmptyField) tempBoard.get(x, y);
-                    if (!tempField.implaceable && tempField.illuminated==0){
+                    if (tempField.implaceable==0 && tempField.illuminated==0){
                         Integer[] temp = {x,y};
                         gameboard.locationPlaceableNonTrivialBulbs.add(temp);
                     }
@@ -530,7 +589,7 @@ public class Agent implements Steppable {
                 //Create Array of connected X empty fields and add it to the ArrayList, when there are no connectable fields add to the first dimension ArrayList
                 if(isEmptyField(x,y)){
                     tempField = (EmptyField) tempBoard.get(x, y);
-                    if(tempField.illuminated>0 || tempField.implaceable){
+                    if(tempField.illuminated>0 || tempField.implaceable>0){
                     //Wenn das Feld beleuchtetet oder als nicht platzierbar gekennzeichnet ist wird die Liste der Hauptliste angefügt
                         if(tempListX.isEmpty()){
                             continue;
@@ -582,7 +641,7 @@ public class Agent implements Steppable {
                 //Create Array of connected X empty fields and add it to the ArrayList, when there are no connectable fields add to the first dimension ArrayList
                 if(isEmptyField(x,y)){
                     tempField = (EmptyField) tempBoard.get(x, y);
-                    if(tempField.illuminated>0 || tempField.implaceable){
+                    if(tempField.illuminated>0 || tempField.implaceable>0){
                     //Wenn das Feld beleuchtetet oder als nicht platzierbar gekennzeichnet ist wird die Liste der Hauptliste angefügt
                         if(tempList.isEmpty()){
                             continue;
@@ -636,7 +695,8 @@ public class Agent implements Steppable {
     public boolean isImplaceable(int x, int y){
         if(x==-1 || y==-1){return true;}
         EmptyField tempField = (EmptyField) tempBoard.get(x, y);
-        return tempField.implaceable;
+        if(tempField.implaceable>0){return true;}
+        else{return false;}
     }
 
     public boolean isIlluminated(int x, int y){
@@ -792,26 +852,26 @@ public class Agent implements Steppable {
                 if(tempWall.numberLeftoverBulbs == 0){
                     if(isEmptyField(tempX+1, tempY)){
                         EmptyField tempField = (EmptyField) tempBoard.get(tempX+1, tempY);
-                        if(!tempField.implaceable && smartmode==2){trivialTrigger=true;}
-                        tempField.implaceable = true;
+                        if(tempField.implaceable==0 && smartmode==2){trivialTrigger=true;}
+                        tempField.implaceable++;
                         
                     }
                     if(isEmptyField(tempX-1, tempY)){
                         EmptyField tempField = (EmptyField) tempBoard.get(tempX-1, tempY);
-                        if(!tempField.implaceable && smartmode==2){trivialTrigger=true;}
-                        tempField.implaceable = true;
+                        if(tempField.implaceable==0 && smartmode==2){trivialTrigger=true;}
+                        tempField.implaceable++;
                         
                     }
                     if(isEmptyField(tempX, tempY+1)){
                         EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY+1);
-                        if(!tempField.implaceable && smartmode==2){trivialTrigger=true;}
-                        tempField.implaceable = true;
+                        if(tempField.implaceable==0 && smartmode==2){trivialTrigger=true;}
+                        tempField.implaceable++;
                         
                     }
                     if(isEmptyField(tempX, tempY-1)){
                         EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY-1);
-                        if(!tempField.implaceable && smartmode==2){trivialTrigger=true;}
-                        tempField.implaceable = true;
+                        if(tempField.implaceable==0 && smartmode==2){trivialTrigger=true;}
+                        tempField.implaceable++;
                     }
                     continue;
                 }
