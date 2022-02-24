@@ -69,19 +69,12 @@ public class Agent implements Steppable {
         //Möglichkeit 2: nach jeder Platzierung und Entfernung der Birnen das Umfeld von den Mauern aktualisieren
 
         //placeTrivialBulbs(2);
-        //setCandidates();
+        setCandidates();
         //setLocationPlaceableNonTrivialBulbs();
         setEmptyFieldsWithNumberedWalls();
-        EmptyField testField = (EmptyField) tempBoard.get(2, 0);
-        Wall tempWall = (Wall) tempBoard.get(3, 0);
-        System.out.println(tempWall.numberLeftoverBulbs);
-
         printGameboard();
-
-        setBulb(4, 0);
-        printGameboard();
-        removeBulb(4, 0);
-        printGameboard();
+        //greedyBacktrackSolver();
+        System.out.println("Wallconstraint Soltution archievable:"+isWallConstraintArchievable());
         
         
         
@@ -153,19 +146,21 @@ public class Agent implements Steppable {
             if(!isEmptyField(tempX, tempY)){continue;}
             tempField = (EmptyField) tempBoard.get(tempX, tempY);
 
-            if(!isOutOfBounds(tempX+1, tempY) && isWall(tempX+1, tempY)){
+            tempField.implaceable = false;
+            
+            if(!isOutOfBounds(tempX+1, tempY) && isNumberedWall(tempX+1, tempY)){
                 tempWall = (Wall) tempBoard.get(tempX+1, tempY);
                 if(tempWall.numberLeftoverBulbs == 0){tempField.implaceable = true;}
             }
-            if(!isOutOfBounds(tempX-1, tempY) && isWall(tempX-1, tempY)){
+            if(!isOutOfBounds(tempX-1, tempY) && isNumberedWall(tempX-1, tempY)){
                 tempWall = (Wall) tempBoard.get(tempX-1, tempY);
                 if(tempWall.numberLeftoverBulbs == 0){tempField.implaceable = true;}
             }
-            if(!isOutOfBounds(tempX, tempY+1) && isWall(tempX, tempY+1)){
+            if(!isOutOfBounds(tempX, tempY+1) && isNumberedWall(tempX, tempY+1)){
                 tempWall = (Wall) tempBoard.get(tempX, tempY+1);
                 if(tempWall.numberLeftoverBulbs == 0){tempField.implaceable = true;}
             }
-            if(!isOutOfBounds(tempX, tempY-1) && isWall(tempX, tempY-1)){
+            if(!isOutOfBounds(tempX, tempY-1) && isNumberedWall(tempX, tempY-1)){
                 tempWall = (Wall) tempBoard.get(tempX, tempY-1);
                 if(tempWall.numberLeftoverBulbs == 0){tempField.implaceable = true;}
             }
@@ -364,13 +359,9 @@ public class Agent implements Steppable {
             tempY = gameboard.numberedWallCandidates.get(i)[1];
             //Wenn die numbered Wall constraints nicht erfüllt sind soll direkt die nächste Iteration genommen werden (Wird das schon?)
             //Prüfung ob die constraints überhaupt noch erfüllbar sind, wenn nicht return false; FOWARD CHECKING!!!
-            if(isWallConstraintArchievable() == false){
-                //printGameboard();
-                steps++;
-                return false;
-            }
             if(setBulb(tempX, tempY)){
-                printGameboard();
+                //if(isWallConstraintArchievable() == false){return false;}
+                //printGameboard();
                 if(greedyBacktrackSolver()){
                     return true;
                 }
