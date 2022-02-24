@@ -47,6 +47,7 @@ public class GameBoard extends SimState {
     //Liste der Locations der nummerierten Mauern
     protected ArrayList<Integer[]> numberedWallLocations = new ArrayList<Integer[]>();
     protected ArrayList<Integer[]> emptyFieldLocations = new ArrayList<Integer[]>();
+    protected ArrayList<Integer[]> emptyFieldLocationswithWalls = new ArrayList<Integer[]>();
     protected ArrayList<Integer[]> locationPlaceableNonTrivialBulbs = new ArrayList<Integer[]>();
 
     protected List<List<Integer>> solutionspaceArrayX = new ArrayList<>();
