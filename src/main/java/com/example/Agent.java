@@ -23,6 +23,7 @@ public class Agent implements Steppable {
     public GameBoard gameboard = null;
     public int stepcounter;
     public String strategy;
+    public int backtrackingSteps = 0;
 
 
     public Agent(){
@@ -46,113 +47,57 @@ public class Agent implements Steppable {
         //In dem KandidatenBacktracking alle Möglichkeiten der restlichen Birnen iterieren, dafür brauche ich einen Abbruch wenn alle Möglichkeiten durch sind
         //Bei der greedybacktrack soll eine validnumbumbsonwall platzierung als Lösung gespeichert werden inklusive trivialer Birnen, die Lösung wird in form von Bulblocations gespeichert. Durch diese Lösungen wird mit einer anderen rekursiven funktion iteriert
 
-        //int num = smartStrategy(1);
-        //System.out.println(num);
-        //completeRandomStrategy();
         //createSolutionspaceArrayX();
         //createSolutionspaceArrayY();
         //System.out.println(gameboard.solutionspaceArrayX.size());
         //System.out.println(gameboard.solutionspaceArrayY.size());
 
+        //TODO
+        //Die Kandidatenliste aufteilen
+        //Jedes mal wenn die Möglichen Kandidaten einer Mauer platziert werden wird geprüft ob diese Mauer die Constraints erfüllt, wenn nicht wird die iteration gebrochen
+
+        //Bugs
+        //Wenn eine Birne entfernt wird und die Felder als platzierbar markiert werden wird nicht geprüft ob andere Mauern betroffen sind
+        //
+
         placeTrivialBulbs(2);
-        createSolutionspaceArrayX();
         setCandidates();
-        System.out.print("X:"+gameboard.numberedWallCandidates.get(0)[0]);
-        System.out.print("Y:"+gameboard.numberedWallCandidates.get(0)[1]);
-        System.out.println("Candidates: "+ gameboard.numberedWallCandidates.size());
-        
-        setLocationPlaceableNonTrivialBulbs();
-        //gameboard.locationPlaceableNonTrivialBulbs.size();
-        //System.out.println("Locations:"+gameboard.locationPlaceableNonTrivialBulbs.size());
-        
-        greedyBacktrackSolver();
-        //backtrackSolver();
-       // backtrackSolverArray();
-        //System.out.print(gameboard.numberedWallCandidates.size());
-        //System.out.print("Placeablebulbs:" +numPlaceableBulbs());
-        //System.out.print("NumNotIlluminated:" +numNotIlluminated());
-        //System.out.println(validateSolution());
-        //setBulb(0, 0);
-        //System.out.println("Number of placeable Bulbs: " + numPlaceableBulbs());
-        //System.out.println(isIlluminated(1, 0));
-        //System.out.println(validateSolution());
-        
-        /*
-        Test ob removen funktioniert
-        
-        int tempX =2;
-        int tempY =0;
-        setBulb(tempX, tempY);
-        System.out.println(tempBoard.get(tempX, tempY).getClass());
-        System.out.println(isIlluminated(2, 1));
-        removeBulb(tempX, tempY);
-        System.out.println(tempBoard.get(tempX, tempY).getClass());
-        System.out.println(isIlluminated(2, 1));
+        printGameboard(); 
+        //greedyBacktrackSolver();
         backtrackSolver();
-        */
-        //backtrackSolver();
-        //backtrackSolverArray();
-        //GameBoard checkpoint = new GameBoard(System.currentTimeMillis(), gameboard);
-        //checkpoint.solutionspaceArrayX.get(0).get(0);
-        //System.out.println(checkpoint.solutionspaceArrayX.size());
-        //createSolutionspaceArrayY();
-        //exhaustiveBlockSearch();
-        //System.out.println(gameboard.numberedWallLocations.size());
-        //System.out.println(Lists.cartesianProduct(gameboard.solutionspaceArrayX));
+        
+        
+        
+        
+        
+        
+    }
 
-        //Backtrack Solver
-        //Kombinationen der Birnen an den Mauern und dann Backtracking
-        
-        
-        
-        //System.out.print(gameboard.solutionspaceArrayY.get(0).get(0)[0]);
-        
-        /*
-        
-        for(int i = 0; i<gameboard.solutionspaceArrayX.size();i++){
-            //System.out.println(gameboard.solutionspaceArrayX.get(i));
-            System.out.println("Break");
-            for(int z = 0; z<gameboard.solutionspaceArrayX.get(i).size();z++){
-                System.out.println(gameboard.solutionspaceArrayX.get(i).get(z)[0]);
-                System.out.println(gameboard.solutionspaceArrayX.get(i).get(z)[1]);
+    public void printGameboard(){
+        //Emptyfield not illuminated not implaceable = _
+        //NumberedWall = 0-4
+        //Bulb = ?
+
+        for(int y = 0; y<tempBoard.height; y++){
+            for(int x = 0; x<tempBoard.width; x++){
+                if(isEmptyField(x,y)){
+                    if(isImplaceable(x,y)){System.out.print("x  ");}
+                    else if(!isImplaceable(x, y))System.out.print("_  ");
+                    
+                }
+                else if(isBulb(x, y)){System.out.print("?  ");}
+                else if(isWall(x, y)){
+                    Wall tempWall = (Wall)tempBoard.get(x, y);
+                    if(tempWall.blank){System.out.print("-1");}
+                    else{System.out.print(tempWall.numberAdjascentBulbs + "  ");}
+                }
+
+
             }
+            System.out.println("");
         }
-
-        
-        int numCob = 1;
-        for(int i = 0; i<gameboard.solutionspaceArrayY.size();i++){
-            //System.out.println(gameboard.solutionspaceArrayX.get(i));
-            System.out.println("Break");
-            
-            numCob = numCob * gameboard.solutionspaceArrayY.get(i).size();
-            System.out.println(numCob);
-            
-        }
-        */
-        
-        
-        
-        
-        
-
-        
-        //So kann man das Objekt nicht kopieren.
-        
-        /*
-        for(int i = 0; i<gameboard.solutionspaceArrayY.size();i++){
-            int temporalInt =gameboard.solutionspaceArrayY.get(i).size()/2;
-            numCombinations = numCombinations *temporalInt;
-            System.out.println(numCombinations);
-        }
-        */
-        
-        //smartStrategy(1);
-        
-/*
-        System.out.println(gameboard.solutionspaceArrayX.size());
-        System.out.println(gameboard.solutionspaceArrayX.get(2).size());
-        System.out.println(gameboard.solutionspaceArrayX.get(2).get(1).length);
-*/
+        System.out.println("");
+        System.out.println("");
 
     }
 
@@ -228,10 +173,12 @@ public class Agent implements Steppable {
                 //if(isEmptyField(x, y) && !isImplaceable(x, y)){
                     //System.out.println(".");
                     if(setBulb(x,y)){
+                        printGameboard();
                         if(backtrackSolver()){
                             return true;
                         }
                         else{
+                            backtrackingSteps++;
                             removeBulb(x, y);
                         }
                     }
@@ -258,6 +205,7 @@ public class Agent implements Steppable {
                             return true;
                         }
                         else{
+                            backtrackingSteps++;
                             removeBulb(x, y);
                         }
                     }
@@ -312,6 +260,7 @@ public class Agent implements Steppable {
             tempY = gameboard.numberedWallCandidates.get(i)[1];
             //Wenn die numbered Wall constraints nicht erfüllt sind soll direkt die nächste Iteration genommen werden (Wird das schon?)
             if(setBulb(tempX, tempY)){
+                printGameboard();
                 if(greedyBacktrackSolver()){
                     return true;
                 }
@@ -319,9 +268,11 @@ public class Agent implements Steppable {
                     //Ab hier können keine Kandidaten mehr gesetzt werden
                     //setLocationPlaceableNonTrivialBulbs();
                     //System.out.println(validateNumBulbsOnWall());
+                    backtrackingSteps++;
                     if(validateNumBulbsOnWall()){
                         //Wenn die numbered Wall constraints erfüllt sind sollen die restlichen platzierungen probiert werden,
                         //Wenn die nicht möglich sind soll die nächste Kandidatenkombination geprüft werden.
+                        
                         setLocationPlaceableNonTrivialBulbs();
                         System.out.println("Locationsize:"+gameboard.locationPlaceableNonTrivialBulbs.size());
                         backtrackSolver2();
@@ -893,130 +844,5 @@ public class Agent implements Steppable {
         } while(trivialTrigger == true);
     }   
 
-    public void removeNonTrivialBulbs(){
-        //illuminate müsste dafür noch eine gegenteilige Funktion haben 
-        int tempX;
-        int tempY;
-
-        for(int i = 0; i<gameboard.locationPlaceableNonTrivialBulbs.size();i++){
-            tempX = gameboard.locationPlaceableNonTrivialBulbs.get(i)[0];
-            tempY = gameboard.locationPlaceableNonTrivialBulbs.get(i)[1];
-            tempBoard.set(tempX, tempY, new EmptyField());
-        }
-    }
-
-    public int chaoticPlacement(boolean printEachIteration){
-        Random dice = new Random();
-        int counter = 0;
-        int tempX;
-        int tempY;
-        //Das funktioniert nicht, ich muss es anders kopieren
-        GameBoard tmpBoard = (GameBoard) gameboard;
-        while(!validateSolution()){
-            gameboard = (GameBoard) tmpBoard;
-            for(int i = 0; i<gameboard.locationPlaceableNonTrivialBulbs.size();i++){
-                tempX = gameboard.locationPlaceableNonTrivialBulbs.get(i)[0];
-                tempY = gameboard.locationPlaceableNonTrivialBulbs.get(i)[1];
-                if(dice.nextInt(2) == 0){
-                    setBulb(tempX, tempY);
-                }
-
-            
-            }
-            if(validateSolution()){
-                System.out.println("Solution found");
-                break;
-            }
-            if(numPlaceableBulbs() == 0){
-                //if(printEachIteration){System.out.print(".");}
-                System.out.print(".");
-                counter++;
-                //removeNonTrivialBulbs();
-            }
-               
-        }
-
-        return counter;
-    }
-
-    public void completeRandomStrategy(){
-        setLocationPlaceableNonTrivialBulbs();
-        int numIterations = chaoticPlacement(false);
-        System.out.println("There are "+numNotIlluminated() + " fields which are not illuminated");
-        System.out.println("There are "+numPlaceableBulbs() + " fields in which a bulb could be placed"); 
-        System.out.println("Solution validated: " + validateSolution() + " after " + numIterations + " Iterations"); 
-
-    }
-
-    public boolean exhaustiveBlockSearch(){
-        ObjectGrid2D checkpointBoard = new ObjectGrid2D(tempBoard);
-
-        for(int a = 0; a<gameboard.solutionspaceArrayX.size();a++){
-            for(int b = 0; b<gameboard.solutionspaceArrayX.get(a).size();b++){
-                //Set Bulb, only validate at the end of loop but reset the board at each run
-
-                        for(int d = 0; d<gameboard.solutionspaceArrayY.size();d++){
-
-
-                                for(int f = 0; f<gameboard.solutionspaceArrayY.get(d).size();f++){
-                                    //Noch eine For Loop? Ich gehe hier nur den "kleinsten" Teil durch aber die anderen werden ignoriert
-                                    //setBulb(gameboard.solutionspaceArrayY.get(d).get(f)[0], gameboard.solutionspaceArrayY.get(d).get(f)[1]);
-                                    if(validateSolution()){
-                                        System.out.println("Lösung gefunden :)");
-                                        break;
-                                    }
-                                    tempBoard = new ObjectGrid2D(checkpointBoard);
-
-                            }
-
-                        }
-            }
-        }
-
-
-
-
-
-
-
-
-        return false;
-    }
-
-    public int smartStrategy(int numSimulations){
-
-        int totalNumIterations = 0;
-
-        int outpouNumNotIlluminated = numNotIlluminated();
-        int outputNumPlaceableBulbs = numPlaceableBulbs();
-
-        
-        System.out.println("There are "+numNotIlluminated() + " fields which are not illuminated");
-        System.out.println("There are "+numPlaceableBulbs() + " fields in which a bulb could be placed\n");
-        placeTrivialBulbs(2);
-
-        int numBulbs = numBulbs();
-        System.out.println(numBulbs + " trivial bulbs have been placed");
-
-        outpouNumNotIlluminated -= numNotIlluminated();
-        outputNumPlaceableBulbs -= numPlaceableBulbs();
-        System.out.println("Number of placeable bulbs have been reduced by " + outputNumPlaceableBulbs);
-        System.out.println("Number of fields to be illuminated have been reduced by " + outpouNumNotIlluminated);
-        System.out.println("There are "+numNotIlluminated() + " fields which are not illuminated");
-        System.out.println("There are "+numPlaceableBulbs() + " fields in which a bulb could be placed\n");        
-
-        setLocationPlaceableNonTrivialBulbs();
-
-        for(int i = 0; i<numSimulations; i++){
-            removeNonTrivialBulbs();
-            int numIterations = chaoticPlacement(false);
-            System.out.println("Solution validated: " + validateSolution() + " after " + numIterations + " Iterations\n");
-            totalNumIterations += numIterations;
-
-        }
-
-        return totalNumIterations/numSimulations;
-
-    }
 }
 
