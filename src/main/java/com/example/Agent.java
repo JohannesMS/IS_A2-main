@@ -61,7 +61,8 @@ public class Agent implements Steppable {
 
         //Bugs
         //Wenn eine Birne entfernt wird und die Felder als platzierbar markiert werden wird nicht geprüft ob andere Mauern betroffen sind
-        //
+        //Möglichkeit 1: 2 verschiedene Arten der markierung als implaceable
+        //Möglichkeit 2: nach jeder Platzierung und Entfernung der Birnen das Umfeld von den Mauern aktualisieren
 
         //placeTrivialBulbs(2);
         //setCandidates();
