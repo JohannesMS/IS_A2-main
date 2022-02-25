@@ -88,7 +88,8 @@ public class Agent implements Steppable {
         setCandidates();
         System.out.println(gameboard.numberedWallCandidates.size());
 
-        greedyBacktrackSolver();
+        //greedyBacktrackSolver();
+        candidateBacktrackFowardSeachSolver();
         //System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
 
         //setBulb(12, 10);
@@ -369,10 +370,10 @@ public class Agent implements Steppable {
                 //if(isEmptyField(x, y) && !isImplaceable(x, y)){
                     //System.out.println(".");
                     //if(isWallConstraintArchievable() == false){return false;}
-                    if(setBulb(x,y)){
-                        
+                    if(isIlluminationConstraintArchievable() && setBulb(x,y)){
+                        //printGameboard();                        
                         //printGameboard();
-                        if(isIlluminationConstraintArchievable() && backtrackSolver2()){
+                        if(backtrackSolver2()){
                             return true;
                         }
                         else{
@@ -389,8 +390,11 @@ public class Agent implements Steppable {
         //System.out.println("Number not illuminated: " + numNotIlluminated());
         //printGameboard();
         if(validateSolution()){
+            System.out.println("FINAL SOLUTION");
             return true;}
-        else return false;
+        else {
+            //System.out.println("No Solution found");
+            return false;}
     }
 
 
@@ -446,16 +450,12 @@ public class Agent implements Steppable {
                     //continue;
                 //}
 
-                if(isWallConstraintArchievable() && isWallConstraintArchievable() && greedyBacktrackSolver()){
-                    //HIER!
-                    //Falls eine Lösung gefunden wird soll hier der andere Solver genutzt werden, dieser soll false returnen wenn keine Lösung gefunden wird
-                    //System.out.println("Possible Solution found");
+                if(greedyBacktrackSolver()){
+                    printGameboard();
+                    if(isIlluminationConstraintArchievable() == false){return false;}
                     System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
                     System.out.println("Wall constraint archievable: " + isWallConstraintArchievable());
-                    //printGameboard();
-                    setLocationPlaceableNonTrivialBulbs();
-                    printGameboard();
-                    backtrackSolver2();
+                    //HIER!
                     return true;
                 }
                 else{
@@ -506,13 +506,16 @@ public class Agent implements Steppable {
         //printGameboard();
         if(validateNumBulbsOnWall()){
             System.out.println("Possible Solution found");
-            //System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
-            //System.out.println("Wall constraint archievable: " + isWallConstraintArchievable());
+            /*
+            //Falls eine Lösung gefunden wird soll hier der andere Solver genutzt werden, dieser soll false returnen wenn keine Lösung gefunden wird
+            //System.out.println("Possible Solution found");
+            System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+            System.out.println("Wall constraint archievable: " + isWallConstraintArchievable());
             //printGameboard();
-            //setLocationPlaceableNonTrivialBulbs();
-            //backtrackSolver2();
-            //setLocationPlaceableNonTrivialBulbs();
-            //backtrackSolver2();
+            setLocationPlaceableNonTrivialBulbs();
+            printGameboard();
+            backtrackSolver2();
+            */
             return true;
         }
         else{
@@ -523,7 +526,7 @@ public class Agent implements Steppable {
     public boolean candidateBacktrackFowardSeachSolver(){
         int tempX;
         int tempY;
-        List<Integer[]> fowardCheckingCandidates = new ArrayList<>();
+        //List<Integer[]> fowardCheckingCandidates = new ArrayList<>();
         
         //System.out.println(iterationCounter);
         for(int i = 0; i<gameboard.numberedWallCandidates.size();i++){
@@ -531,8 +534,8 @@ public class Agent implements Steppable {
             tempY = gameboard.numberedWallCandidates.get(i)[1];
             //Wenn die numbered Wall constraints nicht erfüllt sind soll direkt die nächste Iteration genommen werden (Wird das schon?)
             //Prüfung ob die constraints überhaupt noch erfüllbar sind, wenn nicht return false; FOWARD CHECKING!!!
-            //if(!isWallConstraintArchievable()){return false;}
-            if(setBulb(tempX, tempY)){   
+            
+            if(isWallConstraintArchievable() && isIlluminationConstraintArchievable() && setBulb(tempX, tempY)){   
 
 
                 //FOWARD CHECKING
@@ -541,7 +544,7 @@ public class Agent implements Steppable {
                 //Jede platzierte Birne wird in einer Kandidatenliste gespeichert
                 //Falls eine Verletzung auftritt werden die Kandidaten aus der Liste entfernt
 
-                printGameboard();
+                //printGameboard();
                 //if(isWallConstraintArchievable() == false){
                     //Es loopt wenn keine Lösung beim ersten Versuch möglich ist
                     //removeBulb(tempX, tempY);
@@ -553,20 +556,23 @@ public class Agent implements Steppable {
                     //return false;
                 //}
                 //printGameboard();
-                if(isWallConstraintArchievable() && candidateBacktrackFowardSeachSolver()){
+                if(candidateBacktrackFowardSeachSolver()){
                     return true;
                 }
                 else{removeBulb(tempX, tempY);}
             }
         }
-        printGameboard();
+        //printGameboard();
         //counter++;
         //if(counter%1000000 == 1){System.out.println("1 Million tries");}
+        //if(!isWallConstraintArchievable() || !isIlluminationConstraintArchievable()){return false;}
         if(validateNumBulbsOnWall()){
             //printGameboard();
             System.out.println("Possible Solution found");
-            //setLocationPlaceableNonTrivialBulbs();
-            //backtrackSolver2();
+            System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+            if(isIlluminationConstraintArchievable() == false){return false;}
+            setLocationPlaceableNonTrivialBulbs();
+            backtrackSolver2();
             return true;
         }
         else{
