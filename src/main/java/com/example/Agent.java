@@ -44,77 +44,16 @@ public class Agent implements Steppable {
         this.gameboard = (GameBoard)state;
         this.tempBoard = this.gameboard.field;
         
-
-        //TODO
-        //Die Kandidaten sortieren, die mit weniger Möglichkeiten zuerst, dafür brauche ich noch eine Liste um nach größe zu sortieren
-        //In dem KandidatenBacktracking alle Möglichkeiten der restlichen Birnen iterieren, dafür brauche ich einen Abbruch wenn alle Möglichkeiten durch sind
-        //Bei der greedybacktrack soll eine validnumbumbsonwall platzierung als Lösung gespeichert werden inklusive trivialer Birnen, die Lösung wird in form von Bulblocations gespeichert. Durch diese Lösungen wird mit einer anderen rekursiven funktion iteriert
-        //Nur foward checking?
-
-        //createSolutionspaceArrayX();
-        //createSolutionspaceArrayY();
-        //System.out.println(gameboard.solutionspaceArrayX.size());
-        //System.out.println(gameboard.solutionspaceArrayY.size());
-
-        //TODO
-        //Die Kandidatenliste aufteilen
-        //Jedes mal wenn die Möglichen Kandidaten einer Mauer platziert werden wird geprüft ob diese Mauer die Constraints erfüllt, wenn nicht wird die iteration gebrochen
-        //Jedes mal wenn eine Kandidatenliste durchgegangen wurde soll diese und frühere Listen auch Gültigkeit geprüft werden
-        //Die Liste von numbered Walls
-        //Bei TrivialSolver wird geprüft ob ein Feld von mauern umgeben ist, aber die Prüfung ob out of bounds ist eigentlich unnötig
-        //Objekt nur einmal kreieren, dann nur noch den Pointer neu setzen
-
-        //Bugs
-        //Wenn eine Birne entfernt wird und die Felder als platzierbar markiert werden wird nicht geprüft ob andere Mauern betroffen sind
-        //Möglichkeit 1: 2 verschiedene Arten der markierung als implaceable
-        //Möglichkeit 2: nach jeder Platzierung und Entfernung der Birnen das Umfeld von den Mauern aktualisieren
-
-        
         placeTrivialBulbs();
         printGameboard();
         System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
-        
-/*
-        setBulb(2, 1);
-        printGameboard();
-        System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
-        setBulb(2, 1);
-        printGameboard();
-        System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
-
-  */      
+        System.out.println("Wall Constraint archievable:" + isWallConstraintArchievable()); 
         
         setEmptyFieldsWithNumberedWalls();
         setCandidates();
-        System.out.println(gameboard.numberedWallCandidates.size());
+        System.out.println(gameboard.numberedWallCandidates.size() + " Candidates, 2^" + gameboard.numberedWallCandidates.size() + " Possibilities");
 
-        //greedyBacktrackSolver();
-        candidateBacktrackFowardSeachSolver();
-        //System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
-
-        //setBulb(12, 10);
-        //printGameboard();
-        //setBulb(11, 11);
-        //printGameboard();
-        
-        //setLocationPlaceableNonTrivialBulbs();
-        
-        //printGameboard();
-        //greedyBacktrackSolver();
-        //System.out.println("Wallconstraint Soltution archievable:"+isWallConstraintArchievable());
-        //candidateBacktrackFowardSeachSolver();
-        //setLocationPlaceableNonTrivialBulbs();
-        //backtrackSolver2();
-    
-        //gameboard.numberedWallCandidates.
-        
-        //candidateBacktrackFowardSeachSolver();
-        
-        
-        
-        
-        
-        
+        candidateBacktrackFowardSeachSolver();   
     }
 
     public void printGameboard(){
@@ -331,7 +270,6 @@ public class Agent implements Steppable {
             }
         }
     }
-
 
     public boolean backtrackSolver(){
     
@@ -579,7 +517,6 @@ public class Agent implements Steppable {
         }
     }
 
-
     public boolean isWallConstraintArchievable(){
         int tempX;
         int tempY;
@@ -780,8 +717,7 @@ public class Agent implements Steppable {
                 tempField.implaceable = true;
             }
     }
-    
-    
+     
     public void markAsPlaceable(int x, int y){
         //Remarks the von neumann neighborhood of a wall as placeable when a bulb is removed
             int tempX = x;
