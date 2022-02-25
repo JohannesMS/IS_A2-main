@@ -9,6 +9,8 @@ import sim.field.grid.Grid2D;
 import sim.field.grid.ObjectGrid2D;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 public class Agent implements Steppable {
     
 //TODO
@@ -67,15 +69,37 @@ public class Agent implements Steppable {
         //Möglichkeit 1: 2 verschiedene Arten der markierung als implaceable
         //Möglichkeit 2: nach jeder Platzierung und Entfernung der Birnen das Umfeld von den Mauern aktualisieren
 
-        printGameboard();
+        
         placeTrivialBulbs();
+        printGameboard();
+        System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+        
+/*
+        setBulb(2, 1);
+        printGameboard();
+        System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+        setBulb(2, 1);
+        printGameboard();
+        System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+
+  */      
+        
         setEmptyFieldsWithNumberedWalls();
         setCandidates();
         System.out.println(gameboard.numberedWallCandidates.size());
+
+        greedyBacktrackSolver();
+        //System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+
+        //setBulb(12, 10);
+        //printGameboard();
+        //setBulb(11, 11);
+        //printGameboard();
+        
         //setLocationPlaceableNonTrivialBulbs();
         
-        printGameboard();
-        greedyBacktrackSolver();
+        //printGameboard();
+        //greedyBacktrackSolver();
         //System.out.println("Wallconstraint Soltution archievable:"+isWallConstraintArchievable());
         //candidateBacktrackFowardSeachSolver();
         //setLocationPlaceableNonTrivialBulbs();
@@ -346,6 +370,11 @@ public class Agent implements Steppable {
                     //System.out.println(".");
                     //if(isWallConstraintArchievable() == false){return false;}
                     if(setBulb(x,y)){
+                        printGameboard();
+                        if(isIlluminationConstraintArchievable() == false){
+                            removeBulb(x, y);
+                            continue;
+                        }
                         //printGameboard();
                         if(backtrackSolver2()){
                             return true;
@@ -361,12 +390,14 @@ public class Agent implements Steppable {
          
         }
         //printGameboard();
-        System.out.println("Number not illuminated: " + numNotIlluminated());
+        //System.out.println("Number not illuminated: " + numNotIlluminated());
+        //printGameboard();
         if(validateSolution()){
             System.out.println("Solution found");
             return true;}
         else return false;
     }
+
 
     public boolean backtrackSolverArray(){
         if(validateSolution()){
@@ -425,16 +456,16 @@ public class Agent implements Steppable {
                 }
                 else{
                     if(validateNumBulbsOnWall()){
-                        //setLocationPlaceableNonTrivialBulbs();
+                        setLocationPlaceableNonTrivialBulbs();
                         //printGameboard();
                         System.out.println("Possible Solution found");
-
+                        backtrackSolver2();
                         //Wenn es ein leeres Feld gibt das nicht beleuchtet ist, als nicht platzierbar markiert ist und auf der X und Y Achse kein freies leeres Feld hat das nicht beleuchtet und als nicht platzierbar gekennzeichnet ist
-
+                        //if so, false
 
                         return false;
                         //return true;
-                        //backtrackSolver2();
+                        
                     }
                     removeBulb(tempX, tempY);
                     //Ab hier können keine Kandidaten mehr gesetzt werden
@@ -559,6 +590,66 @@ public class Agent implements Steppable {
             }
         }
 
+        return true;
+    }
+
+    public boolean isIlluminationConstraintArchievable(){
+        //Wenn es ein leeres Feld gibt das nicht platzierbar und nicht beleuchtet ist muss es auf der y oder x achse ein Feld geben dass noch platzierbar ist, sonst kann keine Lösung gefunden werden
+        int tempX;
+        int tempY;
+        int iteratorX;
+        int iteratorY;
+        int placeable = 0;
+        
+        
+        for(int i = 0; i<gameboard.emptyFieldLocations.size();i++){
+            placeable = 0;
+            tempX = gameboard.emptyFieldLocations.get(i)[0];
+            tempY = gameboard.emptyFieldLocations.get(i)[1];
+            iteratorX = tempX;
+            iteratorY = tempY;
+            if(tempX == 10 && tempY == 12){
+                System.out.println("here");
+            }
+            
+
+            if(!isEmptyField(tempX, tempY)){continue;}
+            if(isEmptyField(tempX,tempY) && !isIlluminated(tempX, tempY)){
+                tempX = iteratorX;
+                tempY = iteratorY;
+                
+                while(isEmptyField(tempX+1, tempY)){
+                    if(!isImplaceable(tempX+1,tempY) && !isIlluminated(tempX+1, tempY)){placeable++;}
+                    tempX++;
+                }
+        
+                tempX = iteratorX;
+                tempY = iteratorY;
+                while(isEmptyField(tempX-1, tempY)){
+                    if(!isImplaceable(tempX-1,tempY) && !isIlluminated(tempX-1, tempY)){placeable++;}
+                    tempX--;
+                }
+        
+                tempX = iteratorX;
+                tempY = iteratorY;
+                while(isEmptyField(tempX, tempY+1)){
+                    if(!isImplaceable(tempX,tempY+1) && !isIlluminated(tempX, tempY+1)){placeable++;}
+                    tempY++;
+                }
+        
+                tempX = iteratorX;
+                tempY = iteratorY;
+                while(isEmptyField(tempX, tempY-1)){
+                    if(!isImplaceable(tempX,tempY-1) && !isIlluminated(tempX, tempY-1)){placeable++;}
+                    tempY--;
+                }
+
+                if(placeable==0){
+                    return false;
+                }
+            }
+        }
+        //gameboard.
         return true;
     }
 
