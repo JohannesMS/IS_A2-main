@@ -231,7 +231,6 @@ public class Agent implements Steppable {
         //UpdateOnRemove
         //Nimmt die location der Bulb, schaut sich das jetzt leere Feld an, inkrementiert leftoverbalbs und schaut dann ob eine nahe Mauer noch leftoverbulbs 0 ist, falls ja wird es als implaceable markiert, sonst als placeable
     }
-    
 
     public void setEmptyFieldsWithNumberedWalls(){
         int tempX;
@@ -391,12 +390,12 @@ public class Agent implements Steppable {
         //printGameboard();
         if(validateSolution()){
             System.out.println("FINAL SOLUTION");
+            printGameboard();
             return true;}
         else {
             //System.out.println("No Solution found");
             return false;}
     }
-
 
     public boolean backtrackSolverArray(){
         if(validateSolution()){
@@ -568,8 +567,8 @@ public class Agent implements Steppable {
         //if(!isWallConstraintArchievable() || !isIlluminationConstraintArchievable()){return false;}
         if(validateNumBulbsOnWall()){
             //printGameboard();
-            System.out.println("Possible Solution found");
-            System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+            //System.out.println("Possible Solution found");
+            //System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
             if(isIlluminationConstraintArchievable() == false){return false;}
             setLocationPlaceableNonTrivialBulbs();
             backtrackSolver2();
