@@ -1,15 +1,8 @@
 package com.example;
 
 import java.util.*;
-import java.io.OutputStream;
-import com.google.common.collect.Lists;
-
 import sim.engine.*;
-import sim.field.grid.Grid2D;
 import sim.field.grid.ObjectGrid2D;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 public class Agent implements Steppable {
     
@@ -717,30 +710,6 @@ public class Agent implements Steppable {
                 tempField.implaceable = true;
             }
     }
-     
-    public void markAsPlaceable(int x, int y){
-        //Remarks the von neumann neighborhood of a wall as placeable when a bulb is removed
-            int tempX = x;
-            int tempY = y;
-            if(isEmptyField(tempX+1, tempY)){
-                EmptyField tempField = (EmptyField) tempBoard.get(tempX+1, tempY);
-                tempField.implaceable = false;
-            }
-            if(isEmptyField(tempX-1, tempY)){
-                EmptyField tempField = (EmptyField) tempBoard.get(tempX-1, tempY);
-                tempField.implaceable = false;
-            }
-            if(isEmptyField(tempX, tempY+1)){
-                EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY+1);
-                tempField.implaceable = false;
-            }
-            if(isEmptyField(tempX, tempY-1)){
-                EmptyField tempField = (EmptyField) tempBoard.get(tempX, tempY-1);
-                tempField.implaceable = false;
-            }
-    }
-    
-
 
     public int numPlaceableBulbs(){
         //Gibt die Zahl der Felder zurück die nicht als nicht platzierbar gekennzeichnet sind
@@ -817,7 +786,7 @@ public class Agent implements Steppable {
         List<Integer> tempListX = new ArrayList<>();
         List<Integer> tempListY = new ArrayList<>();
         EmptyField tempField;
-        Integer[] noBulb = {-1,-1};
+        //Integer[] noBulb = {-1,-1};
         for(int y = 0; y<tempBoard.height;y++){
             for(int x = 0; x<tempBoard.width;x++){
                 //Create Array of connected X empty fields and add it to the ArrayList, when there are no connectable fields add to the first dimension ArrayList
@@ -842,7 +811,7 @@ public class Agent implements Steppable {
     
                     }
                     else{
-                        Integer[] tempInt = {x,y};
+                        //Integer[] tempInt = {x,y};
                         //tempList.add(tempInt);
                         tempListX.add(x);
                         tempListY.add(y);
@@ -1010,7 +979,6 @@ public class Agent implements Steppable {
         int tempX;
         int tempY;
         int bulbCounter;
-        boolean validation;
 
         //if(gameboard.numberedWallLocations.size()==0){return true;}
         for(int i = 0; i<gameboard.numberedWallLocations.size();i++){
@@ -1030,23 +998,11 @@ public class Agent implements Steppable {
     }
 
     public boolean validateSolution(){
-        //Gibt zurück ob die Lösung validie ist
-        //Test
-        //if(numNotIlluminated() == 0){return true;}
-        //Original
         if(numNotIlluminated() == 0 && validateNumBulbsOnWall()){return true;}
         else{return false;}
     }
 
     public void placeTrivialBulbs(){
-        //first degree smartmode
-        //place trivial bulbs (including surrounding walls)
-        //only one iteration
-
-        //second degree smartmode
-        //place trivial bulbs iteratively (including surrounding walls)
-
-
         //check for implaceable fields in a x++ and y++ loop
         boolean repeatTrigger = false;
         int tempX;
