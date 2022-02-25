@@ -415,14 +415,26 @@ public class Agent implements Steppable {
             if(setBulb(tempX, tempY)){
                 //FUNKTIONIERT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! fast
                 //printGameboard();
+                //if(isWallConstraintArchievable() == false){
+                    //removeBulb(tempX, tempY);
+                    //continue;
+                //}
+
                 if(greedyBacktrackSolver()){
                     return true;
                 }
                 else{
                     if(validateNumBulbsOnWall()){
-                        setLocationPlaceableNonTrivialBulbs();
+                        //setLocationPlaceableNonTrivialBulbs();
+                        //printGameboard();
                         System.out.println("Possible Solution found");
-                        backtrackSolver2();
+
+                        //Wenn es ein leeres Feld gibt das nicht beleuchtet ist, als nicht platzierbar markiert ist und auf der X und Y Achse kein freies leeres Feld hat das nicht beleuchtet und als nicht platzierbar gekennzeichnet ist
+
+
+                        return false;
+                        //return true;
+                        //backtrackSolver2();
                     }
                     removeBulb(tempX, tempY);
                     //Ab hier können keine Kandidaten mehr gesetzt werden
