@@ -370,13 +370,9 @@ public class Agent implements Steppable {
                     //System.out.println(".");
                     //if(isWallConstraintArchievable() == false){return false;}
                     if(setBulb(x,y)){
-                        printGameboard();
-                        if(isIlluminationConstraintArchievable() == false){
-                            removeBulb(x, y);
-                            continue;
-                        }
+                        
                         //printGameboard();
-                        if(backtrackSolver2()){
+                        if(isIlluminationConstraintArchievable() && backtrackSolver2()){
                             return true;
                         }
                         else{
@@ -393,7 +389,6 @@ public class Agent implements Steppable {
         //System.out.println("Number not illuminated: " + numNotIlluminated());
         //printGameboard();
         if(validateSolution()){
-            System.out.println("Solution found");
             return true;}
         else return false;
     }
@@ -446,20 +441,34 @@ public class Agent implements Steppable {
             if(setBulb(tempX, tempY)){
                 //FUNKTIONIERT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! fast
                 //printGameboard();
-                //if(isWallConstraintArchievable() == false){
+                //if(isWallConstraintArchievable() == false && isIlluminationConstraintArchievable() == false){
                     //removeBulb(tempX, tempY);
                     //continue;
                 //}
 
-                if(greedyBacktrackSolver()){
+                if(isWallConstraintArchievable() && isWallConstraintArchievable() && greedyBacktrackSolver()){
+                    //HIER!
+                    //Falls eine Lösung gefunden wird soll hier der andere Solver genutzt werden, dieser soll false returnen wenn keine Lösung gefunden wird
+                    //System.out.println("Possible Solution found");
+                    System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+                    System.out.println("Wall constraint archievable: " + isWallConstraintArchievable());
+                    //printGameboard();
+                    setLocationPlaceableNonTrivialBulbs();
+                    printGameboard();
+                    backtrackSolver2();
                     return true;
                 }
                 else{
+                    removeBulb(tempX, tempY);
+                    /*
+
                     if(validateNumBulbsOnWall()){
+                        //printGameboard();
                         setLocationPlaceableNonTrivialBulbs();
+                        System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
                         //printGameboard();
                         System.out.println("Possible Solution found");
-                        backtrackSolver2();
+                        //backtrackSolver2();
                         //Wenn es ein leeres Feld gibt das nicht beleuchtet ist, als nicht platzierbar markiert ist und auf der X und Y Achse kein freies leeres Feld hat das nicht beleuchtet und als nicht platzierbar gekennzeichnet ist
                         //if so, false
 
@@ -467,7 +476,8 @@ public class Agent implements Steppable {
                         //return true;
                         
                     }
-                    removeBulb(tempX, tempY);
+                    */
+                    
                     //Ab hier können keine Kandidaten mehr gesetzt werden
                     //setLocationPlaceableNonTrivialBulbs();
                     //System.out.println(validateNumBulbsOnWall());
@@ -494,9 +504,13 @@ public class Agent implements Steppable {
 
         }
         //printGameboard();
-        if(validateSolution()){
-            System.out.println("Solution found");
-            printGameboard();
+        if(validateNumBulbsOnWall()){
+            System.out.println("Possible Solution found");
+            //System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+            //System.out.println("Wall constraint archievable: " + isWallConstraintArchievable());
+            //printGameboard();
+            //setLocationPlaceableNonTrivialBulbs();
+            //backtrackSolver2();
             //setLocationPlaceableNonTrivialBulbs();
             //backtrackSolver2();
             return true;
@@ -608,13 +622,12 @@ public class Agent implements Steppable {
             tempY = gameboard.emptyFieldLocations.get(i)[1];
             iteratorX = tempX;
             iteratorY = tempY;
-            if(tempX == 10 && tempY == 12){
-                System.out.println("here");
-            }
             
 
             if(!isEmptyField(tempX, tempY)){continue;}
             if(isEmptyField(tempX,tempY) && !isIlluminated(tempX, tempY)){
+
+                if(!isImplaceable(tempX, tempY) && !isIlluminated(tempX, tempY)){continue;}
                 tempX = iteratorX;
                 tempY = iteratorY;
                 
