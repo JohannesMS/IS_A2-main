@@ -14,9 +14,9 @@ public class Agent implements Steppable {
     public int backtrackingSteps = 0;
     public int checkForSolution = 0;
     public int fowardCheckPruning = 0;
-    public Boolean ForwardChecking = false;
+    public Boolean ForwardChecking = true;
     public Boolean trivialPlacement = true;
-    
+
 
     int steps = 0;
 
