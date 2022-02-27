@@ -1,22 +1,21 @@
 package com.example;
 
 import java.util.*;
+
 import sim.engine.*;
 import sim.field.grid.ObjectGrid2D;
 
 public class Agent implements Steppable {
     
-//TODO
-//Wann wird geprüft ob die Constraints erfüllt werden?
-//Wie entscheidet der Spieler wo was platziert wird? -> aus Expertenwissen bedienen
-
-
-
     public ObjectGrid2D tempBoard = null;
     public GameBoard gameboard = null;
     public int stepcounter;
     public String strategy;
     public int backtrackingSteps = 0;
+    public int checkForSolution = 0;
+    public int fowardCheckPruning = 0;
+    public Boolean ForwardChecking = true;
+    public Boolean trivialPlacement = true;
     
 
     int steps = 0;
@@ -37,25 +36,26 @@ public class Agent implements Steppable {
         this.gameboard = (GameBoard)state;
         this.tempBoard = this.gameboard.field;
         
-        placeTrivialBulbs();
-        System.out.println("Illumination Constraint archievable at start:" + isIlluminationConstraintArchievable());
-        System.out.println("Wall Constraint archievable at start:" + isWallConstraintArchievable()); 
+        if(trivialPlacement){
+            placeTrivialBulbs();
+            placeTrivialBulbs();
+        }
         
         setEmptyFieldsWithNumberedWalls();
         setCandidates();
         setLocationPlaceableNonTrivialBulbs();
-        System.out.println(gameboard.numberedWallCandidates.size() + " Candidates, 2^" + gameboard.numberedWallCandidates.size() + " Possibilities");
         printGameboard();
-
-        //backtrackSolver2();
-        candidateBacktrackFowardSeachSolver();
-        //candidateBacktrackFowardSeachSolver(); 
-        System.out.println(backtrackingSteps);  
+        candidateBacktrackFowardSeachSolver(); 
+        System.out.println("Number of Backtracking Steps: " + backtrackingSteps);
+        System.out.println("Number of times Solution checked: " + checkForSolution);
+        System.out.println("Number of forward Check Prunings: " + fowardCheckPruning);
+        
     }
 
     public void printGameboard(){
         //Emptyfield not illuminated not implaceable = _
         //NumberedWall = 0-4
+        //Blank Wall = 6
         //Bulb = ?
 
         for(int y = 0; y<tempBoard.height; y++){
@@ -304,7 +304,13 @@ public class Agent implements Steppable {
                 //if(isEmptyField(x, y) && !isImplaceable(x, y)){
                     //System.out.println(".");
                     //if(isWallConstraintArchievable() == false){return false;}
-                    if(isIlluminationConstraintArchievable() == false || isWallConstraintArchievable() == false){return false;}
+                    if(ForwardChecking){
+                        if(isIlluminationConstraintArchievable() == false || isWallConstraintArchievable() == false){
+                            fowardCheckPruning++;
+                            return false;
+                        }
+                    }
+                    
                     if(setBulb(x,y)){
                         //printGameboard();                        
                         //printGameboard();
@@ -324,6 +330,7 @@ public class Agent implements Steppable {
         //printGameboard();
         //System.out.println("Number not illuminated: " + numNotIlluminated());
         //printGameboard();
+        checkForSolution++;
         if(validateSolution()){
             System.out.println("FINAL SOLUTION");
             printGameboard();
@@ -472,7 +479,12 @@ public class Agent implements Steppable {
             //Wenn die numbered Wall constraints nicht erfüllt sind soll direkt die nächste Iteration genommen werden (Wird das schon?)
             //Prüfung ob die constraints überhaupt noch erfüllbar sind, wenn nicht return false; FOWARD CHECKING!!!
             //printGameboard();
-            if(isWallConstraintArchievable() == false || isIlluminationConstraintArchievable() == false){return false;}
+            if(ForwardChecking){
+                if(isWallConstraintArchievable() == false || isIlluminationConstraintArchievable() == false){
+                    fowardCheckPruning++;
+                    return false
+                    ;}
+            }
             if(setBulb(tempX, tempY)){   
 
                 //FOWARD CHECKING
@@ -509,6 +521,7 @@ public class Agent implements Steppable {
         //if(counter%1000000 == 1){System.out.println("1 Million tries");}
         //if(!isWallConstraintArchievable() || !isIlluminationConstraintArchievable()){return false;}
         //printGameboard();
+        checkForSolution++;
         if(validateNumBulbsOnWall()){
             //printGameboard();
             //if(validateNumBulbsOnWall()){System.out.println("TRUE");}
@@ -916,7 +929,9 @@ public class Agent implements Steppable {
     public boolean isNumberedWall(int x, int y){
         if(!isOutOfBounds(x,y) && tempBoard.get(x, y).getClass() == Wall.class){
             Wall tempWall = (Wall) tempBoard.get(x, y);
-            if(!tempWall.blank){return true;}
+            if(!tempWall.blank){
+                return true;
+            }
         }
         return false;
         
@@ -1140,6 +1155,9 @@ public class Agent implements Steppable {
                 tempFreeNeighbors = 0;
                 tempX = gameboard.numberedWallLocations.get(i)[0];
                 tempY = gameboard.numberedWallLocations.get(i)[1];    
+                if(tempX == 9 && tempY == 2){
+                    System.out.println("Here");
+                }
                 Wall tempWall = (Wall) tempBoard.get(tempX, tempY);
                 //Wenn das Feld in der von neumann nachbarschaft leer ist, nicht beleuchetet wird und nicht als nicht platzierbar gekennzeichnet ist wird es als freier Nachbar gezählt
                 if(isEmptyField(tempX+1,tempY) && !isIlluminated(tempX+1, tempY) && !isImplaceable(tempX+1, tempY)){tempFreeNeighbors++;}
