@@ -17,7 +17,7 @@ public class Agent implements Steppable {
     public int stepcounter;
     public String strategy;
     public int backtrackingSteps = 0;
-    public int counter = 0;
+    
 
     int steps = 0;
 
@@ -38,15 +38,19 @@ public class Agent implements Steppable {
         this.tempBoard = this.gameboard.field;
         
         placeTrivialBulbs();
-        printGameboard();
-        System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
-        System.out.println("Wall Constraint archievable:" + isWallConstraintArchievable()); 
+        System.out.println("Illumination Constraint archievable at start:" + isIlluminationConstraintArchievable());
+        System.out.println("Wall Constraint archievable at start:" + isWallConstraintArchievable()); 
         
         setEmptyFieldsWithNumberedWalls();
         setCandidates();
+        setLocationPlaceableNonTrivialBulbs();
         System.out.println(gameboard.numberedWallCandidates.size() + " Candidates, 2^" + gameboard.numberedWallCandidates.size() + " Possibilities");
+        printGameboard();
 
-        candidateBacktrackFowardSeachSolver();   
+        //backtrackSolver2();
+        //candidateBacktrackFowardSeachSolver();
+        //candidateBacktrackFowardSeachSolver(); 
+        System.out.println(backtrackingSteps);  
     }
 
     public void printGameboard(){
@@ -300,6 +304,7 @@ public class Agent implements Steppable {
                 //if(isEmptyField(x, y) && !isImplaceable(x, y)){
                     //System.out.println(".");
                     //if(isWallConstraintArchievable() == false){return false;}
+                    if(isIlluminationConstraintArchievable() == false){return false;}
                     if(isIlluminationConstraintArchievable() && setBulb(x,y)){
                         //printGameboard();                        
                         //printGameboard();
@@ -307,7 +312,7 @@ public class Agent implements Steppable {
                             return true;
                         }
                         else{
-                            //backtrackingSteps++;
+                            backtrackingSteps++;
                             removeBulb(x, y);
                         }
                     }
@@ -381,8 +386,8 @@ public class Agent implements Steppable {
                 //}
 
                 if(greedyBacktrackSolver()){
-                    printGameboard();
-                    if(isIlluminationConstraintArchievable() == false){return false;}
+                    //printGameboard();
+                    //if(isIlluminationConstraintArchievable() == false){return false;}
                     System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
                     System.out.println("Wall constraint archievable: " + isWallConstraintArchievable());
                     //HIER!
@@ -436,6 +441,8 @@ public class Agent implements Steppable {
         //printGameboard();
         if(validateNumBulbsOnWall()){
             System.out.println("Possible Solution found");
+            System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+            System.out.println("Wall constraint archievable: " + isWallConstraintArchievable());
             /*
             //Falls eine Lösung gefunden wird soll hier der andere Solver genutzt werden, dieser soll false returnen wenn keine Lösung gefunden wird
             //System.out.println("Possible Solution found");
@@ -459,13 +466,14 @@ public class Agent implements Steppable {
         //List<Integer[]> fowardCheckingCandidates = new ArrayList<>();
         
         //System.out.println(iterationCounter);
-        for(int i = 0; i<gameboard.numberedWallCandidates.size();i++){
-            tempX = gameboard.numberedWallCandidates.get(i)[0];
-            tempY = gameboard.numberedWallCandidates.get(i)[1];
+        for(int i = 0; i<gameboard.emptyFieldLocationswithWalls.size();i++){
+            tempX = gameboard.emptyFieldLocationswithWalls.get(i)[0];
+            tempY = gameboard.emptyFieldLocationswithWalls.get(i)[1];
             //Wenn die numbered Wall constraints nicht erfüllt sind soll direkt die nächste Iteration genommen werden (Wird das schon?)
             //Prüfung ob die constraints überhaupt noch erfüllbar sind, wenn nicht return false; FOWARD CHECKING!!!
-            
-            if(isWallConstraintArchievable() && isIlluminationConstraintArchievable() && setBulb(tempX, tempY)){   
+            //printGameboard();
+            if(isWallConstraintArchievable() == false && isIlluminationConstraintArchievable() == false){return false;}
+            if(setBulb(tempX, tempY)){   
 
 
                 //FOWARD CHECKING
@@ -489,23 +497,41 @@ public class Agent implements Steppable {
                 if(candidateBacktrackFowardSeachSolver()){
                     return true;
                 }
-                else{removeBulb(tempX, tempY);}
+                else{
+                    //printGameboard();
+                    removeBulb(tempX, tempY);
+                    backtrackingSteps++;
+                }
             }
+            //if(isWallConstraintArchievable() == false) {return false;}
         }
         //printGameboard();
         //counter++;
         //if(counter%1000000 == 1){System.out.println("1 Million tries");}
         //if(!isWallConstraintArchievable() || !isIlluminationConstraintArchievable()){return false;}
+        //printGameboard();
         if(validateNumBulbsOnWall()){
+            //printGameboard();
+            //if(validateNumBulbsOnWall()){System.out.println("TRUE");}
+            //else{return false;}
             //printGameboard();
             //System.out.println("Possible Solution found");
             //System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+            //if(isIlluminationConstraintArchievable() == false){return false;}
+            
+            //System.out.println("Possible Solution found");
+            
+            //System.out.println("Illumination Constraint archievable:" + isIlluminationConstraintArchievable());
+            //System.out.println("Wall constraint archievable: " + isWallConstraintArchievable());
             if(isIlluminationConstraintArchievable() == false){return false;}
+            System.out.println(gameboard.emptyFieldLocations.size() + " Empty Fields left");
+            //System.out.println(backtrackingSteps);
             setLocationPlaceableNonTrivialBulbs();
             backtrackSolver2();
             return true;
         }
         else{
+
             return false;
         }
     }

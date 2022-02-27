@@ -52,11 +52,15 @@ public class GameBoard extends SimState {
         schedule.step(this);
     }
 
+    
+    /** 
+     * @param args
+     */
     public static void main(String[] args){
         
         //Hier würde dann mithilfe des files Array geloopt werden und die Simulation mindestens einmal pro CSV ausgeführt werden
         for(int i=0; i<1;i++){ //4 zum testen
-        GameBoard board = new GameBoard(System.currentTimeMillis(),3);
+        GameBoard board = new GameBoard(System.currentTimeMillis(),9);
         board.setFilepaths();
         board.start();
         board.finish();
@@ -64,6 +68,10 @@ public class GameBoard extends SimState {
         
     }
 
+    
+    /** 
+     * @param o
+     */
     public static void print(Object o){
         System.out.println(o.toString());
     }
@@ -73,6 +81,11 @@ public class GameBoard extends SimState {
         this.files = folder.listFiles();
     }
 
+    
+    /** 
+     * @param pathToCsv
+     * @return int[]
+     */
     public int[] returnCSVDimension(String pathToCsv){
         System.out.println(files[csv]);
         //Gibt die Spielfeldgröße aus, man könnte es auch statisch machen aber es ist elegant die Größe des Spielbretts dynamisch zu machen
