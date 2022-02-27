@@ -60,7 +60,7 @@ public class GameBoard extends SimState {
         
         //Hier würde dann mithilfe des files Array geloopt werden und die Simulation mindestens einmal pro CSV ausgeführt werden
         for(int i=0; i<1;i++){ //4 zum testen
-        GameBoard board = new GameBoard(System.currentTimeMillis(),6);
+        GameBoard board = new GameBoard(System.currentTimeMillis(),2);
         board.setFilepaths();
         board.start();
         board.finish();
